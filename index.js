@@ -1,6 +1,7 @@
 const { Telegraf } = require("telegraf");
 
-const bot = new Telegraf(process.env.BOT_TOKEN);
+const token = process.env.BOT_TOKEN
+const bot = new Telegraf(token);
 
 bot.help((ctx) => {
   ctx.reply("These are my known commands: /hello");
@@ -11,3 +12,5 @@ bot.command("hello", (ctx) => {
 });
 
 bot.launch();
+
+
