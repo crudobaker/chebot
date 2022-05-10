@@ -1,13 +1,13 @@
 {
   "name": "chebot",
   "version": "1.0.0",
-  "description": "A telegram bot to help you with life",
+  "description": "An smart bot that makes your professional organization more efficient.",
   "workspaces":[
     "core",
-    "telegram"
+    "bot"
  ],
   "scripts": {
-    "telegram": "nodemon telegram/src/index.js"
+    "bot": "nodemon bot/src/telegram/index.js"
   },
   "repository": {
     "type": "git",

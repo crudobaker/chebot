@@ -1,9 +1,8 @@
 {
-  "name": "telegram",
+  "name": "bot",
   "version": "1.0.0",
-  "description": "A telegram bot",
   "scripts": {
-    "run": "nodemon src/index.js"
+    "bot": "nodemon src/telegram/index.js"
   },
   "dependencies": {
     "date-fns": "^2.28.0",
