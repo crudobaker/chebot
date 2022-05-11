@@ -1,0 +1,15 @@
+{
+  "name": "bot",
+  "version": "1.0.0",
+  "scripts": {
+    "bot": "nodemon src/telegram/index.js"
+  },
+  "dependencies": {
+    "date-fns": "^2.28.0",
+    "telegraf": "^4.7.0",
+    "core": "../core"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}

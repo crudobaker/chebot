@@ -5,15 +5,13 @@ const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);
 
 bot.help((ctx) => {
-  ctx.reply("These are my known commands: /hello");
+  ctx.reply(
+    "Estas son mis acciones disponibles: \n\n/hola: Nos saludamos y te ofrezco las diferentes acciones para que comencemos a interactuar."
+  );
 });
 
-bot.command("hello", (ctx) => {
-  ctx.reply(`Hola querido ${ctx.update.message.from.first_name}`);
-});
-
-bot.command("opciones", (ctx) => {
-  ctx.reply("Qué deseas hacer?", {
+bot.command("hola", (ctx) => {
+  ctx.reply(`Hola ${ctx.update.message.from.first_name}. Qué deseas hacer?`, {
     reply_markup: {
       inline_keyboard: [
         [{ text: "Inicio Guardia", callback_data: "inicio-guardia" }],
@@ -33,7 +31,7 @@ bot.action("inicio-guardia", (ctx) =>
 
 bot.action("fin-guardia", (ctx) =>
   ctx.reply(
-    `Guardia finalizada a las ${format(new Date(),  "dd/MM/yyyy hh:mm")} para ${
+    `Guardia finalizada a las ${format(new Date(), "dd/MM/yyyy hh:mm")} para ${
       ctx.update.callback_query.from.first_name
     }.`
   )
