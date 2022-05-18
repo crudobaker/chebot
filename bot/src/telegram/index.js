@@ -36,7 +36,7 @@ bot.help((ctx) => {
 });
 
 bot.command("hola", (ctx) => {
-  ctx.reply(`Hola ${ctx.update.message.from.first_name}. Qué deseas hacer?`, {
+  ctx.reply(`Hola ${ctx.update.message.from.first_name}. ¿Qué deseas hacer?`, {
     reply_markup: {
       inline_keyboard: [
         [
