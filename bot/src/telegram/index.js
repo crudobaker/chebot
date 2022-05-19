@@ -20,6 +20,14 @@ class Assignation {
     this.guard = guard;
     this.physiotherapist = physiotherapist;
   }
+
+  isFor(guard) {
+    return this.guard === guard;
+  }
+
+  information() {
+    return `${this.guard.information()} - ${this.physiotherapist}`;
+  }
 }
 
 const guards = [
@@ -28,7 +36,7 @@ const guards = [
   new Guard(3, new Date(new Date().getTime() + 60 * 60 * 24 * 1000 * 3)),
 ];
 
-const assignations = [];
+const assignations = [new Assignation(guards[0], "Pablo")];
 
 bot.help((ctx) => {
   ctx.reply(
@@ -43,7 +51,13 @@ bot.command("hola", (ctx) => {
         [
           {
             text: "Consultar Dias de Guardias",
-            callback_data: "/guards/query",
+            callback_data: "/guards/get",
+          },
+        ],
+        [
+          {
+            text: "Eliminar Guardias",
+            callback_data: "/guards/delete",
           },
         ],
       ],
@@ -51,27 +65,64 @@ bot.command("hola", (ctx) => {
   });
 });
 
-bot.action("/guards/query", (ctx) =>
+bot.action("/guards/get", (ctx) =>
   ctx.reply("Estos son los dias de guardias a cubrir", {
     reply_markup: {
       inline_keyboard: guards.map((guard) => [
         {
           text: guard.information(),
-          callback_data: `/guards/query?id=${guard.id}`,
+          callback_data: `/guards/${guard.id}/get`,
         },
       ]),
     },
   })
 );
 
-bot.action(new RegExp("/guards/query", "i"), (ctx) => {
-  const guardId = ctx.match.input.split("id=")[1];
-  console.log('guardId', guardId)
-  ctx.reply(
-    `Usted seleccionó la guardia ${
-      guards.find((guard) => String(guard.id) === guardId).information()
-    } `
+bot.action("/guards/delete", (ctx) =>
+  ctx.reply("Estas son las guardias a eliminar", {
+    reply_markup: {
+      inline_keyboard: guards.map((guard) => [
+        {
+          text: guard.information(),
+          callback_data: `/guards/${guard.id}/get`,
+        },
+        {
+          text: "Borrar",
+          callback_data: `/guards/${guard.id}/delete`,
+        },
+      ]),
+    },
+  })
+);
+
+bot.action(new RegExp("/guards/[^]+/get", "i"), (ctx) => {
+  const guardId = ctx.match.input.split("/")[2];
+  const guard = guards.find((guard) => String(guard.id) === guardId);
+  const guardAssignations = assignations.filter((assignation) =>
+    assignation.isFor(guard)
   );
+
+  if (guardAssignations.length) {
+    ctx.reply(
+      `Estas son las asignaciones de la guardia ${guardAssignations[0].information()}`
+    );
+  } else {
+    ctx.reply(`No hay asignaciones para la guardia ${guard.information()}`);
+  }
+});
+
+bot.action(new RegExp("/guards/[^]+/delete", "i"), (ctx) => {
+  const guardId = ctx.match.input.split("/")[2];
+  const guard = guards.find((guard) => String(guard.id) === guardId);
+  const deletedGuard = guards.splice(guards.indexOf(guard), 1)
+
+  if (deletedGuard) {
+    ctx.reply(
+      `Guardia eliminada exitosamente!`
+    );
+  } else {
+    ctx.reply(`Error al eliminar la guardia.`);
+  }
 });
 
 bot.launch();
