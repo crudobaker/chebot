@@ -5,7 +5,8 @@ const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);
 
 class Guard {
-  constructor(date) {
+  constructor(id, date) {
+    this.id = id;
     this.date = date;
   }
 
@@ -22,9 +23,9 @@ class Assignation {
 }
 
 const guards = [
-  new Guard(new Date(new Date().getTime() + 60 * 60 * 24 * 1000)),
-  new Guard(new Date(new Date().getTime() + 60 * 60 * 24 * 1000 * 2)),
-  new Guard(new Date(new Date().getTime() + 60 * 60 * 24 * 1000 * 3)),
+  new Guard(1, new Date(new Date().getTime() + 60 * 60 * 24 * 1000)),
+  new Guard(2, new Date(new Date().getTime() + 60 * 60 * 24 * 1000 * 2)),
+  new Guard(3, new Date(new Date().getTime() + 60 * 60 * 24 * 1000 * 3)),
 ];
 
 const assignations = [];
@@ -42,7 +43,7 @@ bot.command("hola", (ctx) => {
         [
           {
             text: "Consultar Dias de Guardias",
-            callback_data: "consultar-guardias",
+            callback_data: "/guards/query",
           },
         ],
       ],
@@ -50,26 +51,27 @@ bot.command("hola", (ctx) => {
   });
 });
 
-bot.action("consultar-guardias", (ctx) =>
+bot.action("/guards/query", (ctx) =>
   ctx.reply("Estos son los dias de guardias a cubrir", {
     reply_markup: {
       inline_keyboard: guards.map((guard) => [
-        { text: guard.information(), callback_data: "guardia-options" },
+        {
+          text: guard.information(),
+          callback_data: `/guards/query?id=${guard.id}`,
+        },
       ]),
     },
   })
 );
 
-bot.action(
-  "guardia-options",
-  (ctx) => (console.log(ctx.update.callback_query.message),
-  ctx.reply("A quien desea asignar?", {
-    reply_markup: {
-      inline_keyboard: guards.map((guard) => [
-        { text: guard.information(), callback_data: "guardia-options" },
-      ]),
-    },
-  }))
-);
+bot.action(new RegExp("/guards/query", "i"), (ctx) => {
+  const guardId = ctx.match.input.split("id=")[1];
+  console.log('guardId', guardId)
+  ctx.reply(
+    `Usted seleccionó la guardia ${
+      guards.find((guard) => String(guard.id) === guardId).information()
+    } `
+  );
+});
 
 bot.launch();
