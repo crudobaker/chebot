@@ -65,18 +65,22 @@ bot.command("hola", (ctx) => {
   });
 });
 
-bot.action("/guards/get", (ctx) =>
-  ctx.reply("Estos son los dias de guardias a cubrir", {
-    reply_markup: {
-      inline_keyboard: guards.map((guard) => [
-        {
-          text: guard.information(),
-          callback_data: `/guards/${guard.id}/get`,
-        },
-      ]),
-    },
-  })
-);
+bot.action("/guards/get", (ctx) => {
+  if (guards.length > 0) {
+    ctx.reply("Estos son los dias de guardias a cubrir", {
+      reply_markup: {
+        inline_keyboard: guards.map((guard) => [
+          {
+            text: guard.information(),
+            callback_data: `/guards/${guard.id}/get`,
+          },
+        ]),
+      },
+    });
+  } else {
+    ctx.reply("No hay guardias cargadas");
+  }
+});
 
 bot.action("/guards/delete", (ctx) =>
   ctx.reply("Estas son las guardias a eliminar", {
@@ -98,6 +102,12 @@ bot.action("/guards/delete", (ctx) =>
 bot.action(new RegExp("/guards/[^]+/get", "i"), (ctx) => {
   const guardId = ctx.match.input.split("/")[2];
   const guard = guards.find((guard) => String(guard.id) === guardId);
+
+  if (guard === undefined) {
+    ctx.reply(`La guardia no fue encontrada.`);
+    return;
+  }
+
   const guardAssignations = assignations.filter((assignation) =>
     assignation.isFor(guard)
   );
@@ -114,12 +124,17 @@ bot.action(new RegExp("/guards/[^]+/get", "i"), (ctx) => {
 bot.action(new RegExp("/guards/[^]+/delete", "i"), (ctx) => {
   const guardId = ctx.match.input.split("/")[2];
   const guard = guards.find((guard) => String(guard.id) === guardId);
-  const deletedGuard = guards.splice(guards.indexOf(guard), 1)
+
+  if (guard === undefined) {
+    ctx.reply(`La guardia no fue encontrada.`);
+    return;
+  }
+  
+  const guardIndex = guards.indexOf(guard);
+  const deletedGuard = guards.splice(guardIndex, 1);
 
   if (deletedGuard) {
-    ctx.reply(
-      `Guardia eliminada exitosamente!`
-    );
+    ctx.reply(`Guardia eliminada exitosamente!`);
   } else {
     ctx.reply(`Error al eliminar la guardia.`);
   }
