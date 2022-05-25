@@ -1,6 +1,6 @@
 import { Telegraf } from "telegraf";
-import Guard from "core/src/guard.js";
-import Assignation from "core/src/assignation.js";
+import Guard from "../../../core/src/guard.js";
+import Assignation from "../../../core/src/assignation.js"
 
 const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);
