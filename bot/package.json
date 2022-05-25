@@ -1,6 +1,7 @@
 {
   "name": "bot",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "bot": "nodemon src/telegram/index.js"
   },

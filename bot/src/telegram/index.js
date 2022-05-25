@@ -1,34 +1,9 @@
-const { Telegraf } = require("telegraf");
-const { format } = require("date-fns");
-// const { Guard } = require("../../../core/src/guard")
+import { Telegraf } from "telegraf";
+import Guard from "../../../core/src/guard.js";
+import Assignation from "../../../core/src/assignation.js";
+
 const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);
-
-class Guard {
-  constructor(id, date) {
-    this.id = id;
-    this.date = date;
-  }
-
-  information() {
-    return format(this.date, "dd/MM/yyyy");
-  }
-}
-
-class Assignation {
-  constructor(guard, physiotherapist) {
-    this.guard = guard;
-    this.physiotherapist = physiotherapist;
-  }
-
-  isFor(guard) {
-    return this.guard === guard;
-  }
-
-  information() {
-    return `${this.guard.information()} - ${this.physiotherapist}`;
-  }
-}
 
 const guards = [
   new Guard(1, new Date(new Date().getTime() + 60 * 60 * 24 * 1000)),
@@ -66,10 +41,10 @@ bot.action("GET /guards", (ctx) => {
         inline_keyboard: guards.map((guard) => [
           {
             text: guard.information(),
-            callback_data: 'jjjj',
+            callback_data: "jjjj",
           },
           {
-            text: 'Info',
+            text: "Info",
             callback_data: `GET /guards/${guard.id}`,
           },
           {
@@ -114,7 +89,7 @@ bot.action(new RegExp("DELETE /guards/[^]+", "i"), (ctx) => {
     ctx.reply(`La guardia no fue encontrada.`);
     return;
   }
-  
+
   const guardIndex = guards.indexOf(guard);
   const deletedGuard = guards.splice(guardIndex, 1);
 

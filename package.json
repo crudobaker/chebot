@@ -2,10 +2,11 @@
   "name": "chebot",
   "version": "1.0.0",
   "description": "An smart bot that makes your professional organization more efficient.",
-  "workspaces":[
+  "type": "module",
+  "workspaces": [
     "core",
     "bot"
- ],
+  ],
   "scripts": {
     "bot": "nodemon bot/src/telegram/index.js"
   },
