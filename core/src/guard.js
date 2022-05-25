@@ -1,6 +1,6 @@
-const { format } = require("date-fns");
+import { format } from "date-fns";
 
-const guardClass = class Guard {
+export default class Guard {
   constructor(id, date) {
     this.id = id;
     this.date = date;
@@ -9,6 +9,4 @@ const guardClass = class Guard {
   information() {
     return format(this.date, "dd/MM/yyyy");
   }
-};
-
-export default guardClass;
+}

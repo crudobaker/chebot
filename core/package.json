@@ -1,8 +1,9 @@
 {
   "name": "core",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
-    "test": "jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "devDependencies": {
     "jest": "^28.1.0"
