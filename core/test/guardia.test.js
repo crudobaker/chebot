@@ -1,9 +1,9 @@
-const Guardia = require("../src/guardia.js");
+import Guard from "../src/guard.js";
 
 describe("Guardia Test", () => {
   test("a test", async () => {
-    const nuevaGuardia = new Guardia();
+    const newGuard = new Guard(1, new Date());
 
-    expect(nuevaGuardia.name).toBe("nueva guardia");
+    expect(newGuard.id).toEqual(1);
   });
 });

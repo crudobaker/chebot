@@ -1,6 +1,6 @@
 const { Telegraf } = require("telegraf");
 const { format } = require("date-fns");
-
+// const { Guard } = require("../../../core/src/guard")
 const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);
 
@@ -50,14 +50,8 @@ bot.command("hola", (ctx) => {
       inline_keyboard: [
         [
           {
-            text: "Consultar Dias de Guardias",
-            callback_data: "/guards/get",
-          },
-        ],
-        [
-          {
-            text: "Eliminar Guardias",
-            callback_data: "/guards/delete",
+            text: "Consultar Guardias",
+            callback_data: "GET /guards",
           },
         ],
       ],
@@ -65,14 +59,22 @@ bot.command("hola", (ctx) => {
   });
 });
 
-bot.action("/guards/get", (ctx) => {
+bot.action("GET /guards", (ctx) => {
   if (guards.length > 0) {
-    ctx.reply("Estos son los dias de guardias a cubrir", {
+    ctx.reply("Estos son los dias de guardias", {
       reply_markup: {
         inline_keyboard: guards.map((guard) => [
           {
             text: guard.information(),
-            callback_data: `/guards/${guard.id}/get`,
+            callback_data: 'jjjj',
+          },
+          {
+            text: 'Info',
+            callback_data: `GET /guards/${guard.id}`,
+          },
+          {
+            text: "Borrar",
+            callback_data: `DELETE /guards/${guard.id}`,
           },
         ]),
       },
@@ -82,24 +84,7 @@ bot.action("/guards/get", (ctx) => {
   }
 });
 
-bot.action("/guards/delete", (ctx) =>
-  ctx.reply("Estas son las guardias a eliminar", {
-    reply_markup: {
-      inline_keyboard: guards.map((guard) => [
-        {
-          text: guard.information(),
-          callback_data: `/guards/${guard.id}/get`,
-        },
-        {
-          text: "Borrar",
-          callback_data: `/guards/${guard.id}/delete`,
-        },
-      ]),
-    },
-  })
-);
-
-bot.action(new RegExp("/guards/[^]+/get", "i"), (ctx) => {
+bot.action(new RegExp("GET /guards/[^]+", "i"), (ctx) => {
   const guardId = ctx.match.input.split("/")[2];
   const guard = guards.find((guard) => String(guard.id) === guardId);
 
@@ -121,7 +106,7 @@ bot.action(new RegExp("/guards/[^]+/get", "i"), (ctx) => {
   }
 });
 
-bot.action(new RegExp("/guards/[^]+/delete", "i"), (ctx) => {
+bot.action(new RegExp("DELETE /guards/[^]+", "i"), (ctx) => {
   const guardId = ctx.match.input.split("/")[2];
   const guard = guards.find((guard) => String(guard.id) === guardId);
 
