@@ -8,7 +8,9 @@
     "bot"
   ],
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "clean": "rm -rf node_modules && npm run clean --workspaces",
+    "build": "npm install && npm run build --workspaces"
   },
   "repository": {
     "type": "git",

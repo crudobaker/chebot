@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "clean": "rm -rf node_modules",
+    "build": "npm install",
     "bot": "nodemon src/telegram/index.js"
   },
   "dependencies": {
