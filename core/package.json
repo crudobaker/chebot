@@ -1,5 +1,8 @@
 {
-  "name": "core",
+  "name": "@chebot/core",
   "version": "1.0.0",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "date-fns": "^2.28.0"
+  }
 }

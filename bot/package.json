@@ -1,5 +1,5 @@
 {
-  "name": "bot",
+  "name": "@chebot/bot",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
@@ -7,7 +7,6 @@
   },
   "dependencies": {
     "core": "../core",
-    "date-fns": "^2.28.0",
     "telegraf": "^4.7.0"
   },
   "devDependencies": {

@@ -2,7 +2,7 @@
 A Telegram bot to help you about life
 
 ## Start up locally
-To run the bot in your computer, you need to write in your terminal (from chebot directory):
+To run the bot in your computer, you need to write in your terminal (from bot module directory):
 `npm run bot`
 
 ### Configure the BOT_TOKEN locally
