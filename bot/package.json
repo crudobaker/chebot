@@ -6,7 +6,7 @@
     "bot": "nodemon src/telegram/index.js"
   },
   "dependencies": {
-    "core": "../core",
+    "core": "*",
     "telegraf": "^4.7.0"
   },
   "devDependencies": {

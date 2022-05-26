@@ -4,11 +4,10 @@
   "description": "An smart bot that makes your professional organization more efficient.",
   "type": "module",
   "workspaces": [
-    "./core/*",
-    "./bot/*"
+    "core",
+    "bot"
   ],
   "scripts": {
-    "bot": "nodemon bot/src/telegram/index.js",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "repository": {
