@@ -1,34 +1,9 @@
-const { Telegraf } = require("telegraf");
-const { format } = require("date-fns");
+import { Telegraf } from "telegraf";
+import Guard from "core/src/guard.js";
+import Assignation from "core/src/assignation.js"
 
 const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);
-
-class Guard {
-  constructor(id, date) {
-    this.id = id;
-    this.date = date;
-  }
-
-  information() {
-    return format(this.date, "dd/MM/yyyy");
-  }
-}
-
-class Assignation {
-  constructor(guard, physiotherapist) {
-    this.guard = guard;
-    this.physiotherapist = physiotherapist;
-  }
-
-  isFor(guard) {
-    return this.guard === guard;
-  }
-
-  information() {
-    return `${this.guard.information()} - ${this.physiotherapist}`;
-  }
-}
 
 const guards = [
   new Guard(1, new Date(new Date().getTime() + 60 * 60 * 24 * 1000)),
@@ -50,14 +25,8 @@ bot.command("hola", (ctx) => {
       inline_keyboard: [
         [
           {
-            text: "Consultar Dias de Guardias",
-            callback_data: "/guards/get",
-          },
-        ],
-        [
-          {
-            text: "Eliminar Guardias",
-            callback_data: "/guards/delete",
+            text: "Consultar Guardias",
+            callback_data: "GET /guards",
           },
         ],
       ],
@@ -65,14 +34,22 @@ bot.command("hola", (ctx) => {
   });
 });
 
-bot.action("/guards/get", (ctx) => {
+bot.action("GET /guards", (ctx) => {
   if (guards.length > 0) {
-    ctx.reply("Estos son los dias de guardias a cubrir", {
+    ctx.reply("Estos son los dias de guardias", {
       reply_markup: {
         inline_keyboard: guards.map((guard) => [
           {
             text: guard.information(),
-            callback_data: `/guards/${guard.id}/get`,
+            callback_data: "jjjj",
+          },
+          {
+            text: "Info",
+            callback_data: `GET /guards/${guard.id}`,
+          },
+          {
+            text: "Borrar",
+            callback_data: `DELETE /guards/${guard.id}`,
           },
         ]),
       },
@@ -82,24 +59,7 @@ bot.action("/guards/get", (ctx) => {
   }
 });
 
-bot.action("/guards/delete", (ctx) =>
-  ctx.reply("Estas son las guardias a eliminar", {
-    reply_markup: {
-      inline_keyboard: guards.map((guard) => [
-        {
-          text: guard.information(),
-          callback_data: `/guards/${guard.id}/get`,
-        },
-        {
-          text: "Borrar",
-          callback_data: `/guards/${guard.id}/delete`,
-        },
-      ]),
-    },
-  })
-);
-
-bot.action(new RegExp("/guards/[^]+/get", "i"), (ctx) => {
+bot.action(new RegExp("GET /guards/[^]+", "i"), (ctx) => {
   const guardId = ctx.match.input.split("/")[2];
   const guard = guards.find((guard) => String(guard.id) === guardId);
 
@@ -121,7 +81,7 @@ bot.action(new RegExp("/guards/[^]+/get", "i"), (ctx) => {
   }
 });
 
-bot.action(new RegExp("/guards/[^]+/delete", "i"), (ctx) => {
+bot.action(new RegExp("DELETE /guards/[^]+", "i"), (ctx) => {
   const guardId = ctx.match.input.split("/")[2];
   const guard = guards.find((guard) => String(guard.id) === guardId);
 
@@ -129,7 +89,7 @@ bot.action(new RegExp("/guards/[^]+/delete", "i"), (ctx) => {
     ctx.reply(`La guardia no fue encontrada.`);
     return;
   }
-  
+
   const guardIndex = guards.indexOf(guard);
   const deletedGuard = guards.splice(guardIndex, 1);
 

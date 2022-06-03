@@ -2,12 +2,15 @@
   "name": "chebot",
   "version": "1.0.0",
   "description": "An smart bot that makes your professional organization more efficient.",
-  "workspaces":[
+  "type": "module",
+  "workspaces": [
     "core",
     "bot"
- ],
+  ],
   "scripts": {
-    "bot": "nodemon bot/src/telegram/index.js"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "clean": "rm -rf node_modules && npm run clean --workspaces",
+    "build": "npm install && npm run build --workspaces"
   },
   "repository": {
     "type": "git",
@@ -18,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/crudobaker/chebot/issues"
   },
-  "homepage": "https://github.com/crudobaker/chebot#readme"
+  "homepage": "https://github.com/crudobaker/chebot#readme",
+  "devDependencies": {
+    "jest": "^28.1.0"
+  }
 }

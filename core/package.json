@@ -1,7 +1,12 @@
 {
-  "name": "core",
+  "name": "@chebot/core",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
-    "test": ""
+    "clean": "rm -rf node_modules",
+    "build": "npm install"
+  },
+  "dependencies": {
+    "date-fns": "^2.28.0"
   }
 }
