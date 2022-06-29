@@ -1,9 +1,10 @@
 import { Telegraf } from "telegraf";
 import {
-  users,
+  findUserById,
   guards,
-  physiotherapists,
-  assignations,
+  getNextAssignationForUser,
+  getGuardAssignations,
+  deleteGuard,
 } from "core/src/data.js";
 
 const token = process.env.BOT_TOKEN;
@@ -16,7 +17,7 @@ bot.help((ctx) => {
 });
 
 bot.command("hola", (ctx) => {
-  const user = findUser(ctx.update.message.from.id);
+  const user = findUserById(ctx.update.message.from.id);
 
   ctx.reply(`Hola ${user.firstName}. ¿Qué deseas hacer?`, {
     reply_markup: {
@@ -47,11 +48,11 @@ bot.action("getLoadedGuards", (ctx) => {
           },
           {
             text: "Info",
-            callback_data: `GET /guards/${guard.id}`,
+            callback_data: `getGuardInformation?id=${guard.id}`,
           },
           {
             text: "Borrar",
-            callback_data: `DELETE /guards/${guard.id}`,
+            callback_data: `deleteGuard?id=${guard.id}`,
           },
         ]),
       },
@@ -61,76 +62,40 @@ bot.action("getLoadedGuards", (ctx) => {
   }
 });
 
-bot.action(new RegExp("GET /guards/[^]+", "i"), (ctx) => {
-  console.log(ctx.update.callback_query)
-  const guardId = ctx.match.input.split("/")[2];
-  const guard = guards.find((guard) => String(guard.id) === guardId);
+bot.action(new RegExp("getGuardInformation"), (ctx) => {
+  try {
+    const guardId = ctx.update.callback_query.data.split("=")[1];
+    const guardAssignations = getGuardAssignations(guardId);
 
-  if (guard === undefined) {
-    ctx.reply(`La guardia no fue encontrada.`);
-    return;
-  }
-
-  const guardAssignations = assignations.filter((assignation) =>
-    assignation.isFor(guard)
-  );
-
-  if (guardAssignations.length) {
-    ctx.reply(
-      `Estas son las asignaciones de la guardia ${guardAssignations[0].information()}`
-    );
-  } else {
-    ctx.reply("La guardia no tiene asignaciones.");
+    if (guardAssignations.length) {
+      const guardAssignationsInformations = guardAssignations
+        .map((guardAssignation) => guardAssignation.information())
+        .join("\n");
+      ctx.reply(
+        `Estas son las asignaciones de la guardia:\n${guardAssignationsInformations}`
+      );
+    } else {
+      ctx.reply("La guardia no tiene asignaciones.");
+    }
+  } catch (error) {
+    ctx.reply(error.message);
   }
 });
 
 bot.action("getNextAssignedGuardForUser", (ctx) => {
-  const user = findUser(ctx.update.callback_query.from.id);
-  const physiotherapist = physiotherapists.find((physiotherapist) =>
-    physiotherapist.isUser(user)
-  );
-
-  if (physiotherapist === undefined) {
-    ctx.reply(`El profesional no fue encontrado.`);
-    return;
+  try {
+    const userId = findUser(ctx.update.callback_query.from.id);
+    const nextAssignation = getNextAssignationForUser(userId);
+    ctx.reply(`Su próxima asignación es ${nextAssignation.information()}`);
+  } catch (error) {
+    ctx.reply(error.message);
   }
-
-  const nextAssignation = assignations.find((assignation) =>
-    assignation.isAssignedTo(physiotherapist)
-  );
-
-  if (nextAssignation === undefined) {
-    ctx.reply(`No tiene próximas guardias asignadas.`);
-    return;
-  }
-
-  ctx.reply(`Su próxima asignación es ${nextAssignation.information()}`);
 });
 
-bot.action(new RegExp("DELETE /guards/[^]+", "i"), (ctx) => {
-  const guardId = ctx.match.input.split("/")[2];
-  const guard = guards.find((guard) => String(guard.id) === guardId);
-
-  if (guard === undefined) {
-    ctx.reply(`La guardia no fue encontrada.`);
-    return;
-  }
-
-  const guardIndex = guards.indexOf(guard);
-  const deletedGuard = guards.splice(guardIndex, 1);
-
-  if (deletedGuard) {
-    ctx.reply(`Guardia eliminada exitosamente!`);
-  } else {
-    ctx.reply(`Error al eliminar la guardia.`);
-  }
+bot.action(new RegExp("deleteGuard"), (ctx) => {
+  const guardId = ctx.update.callback_query.data.split("=")[1];
+  deleteGuard(guardId);
+  ctx.reply(`Guardia eliminada exitosamente!`);
 });
 
 bot.launch();
-
-function findUser(telegramUserId) {
-  const user = users.find((user) => user.hasId(telegramUserId));
-  //validate user exists
-
-  return user;
-}

@@ -11,6 +11,7 @@ export const users = [leoUser];
 //PHYSIOTHERAPIST
 const pablo = new Physiotherapist("Pablo", pabloUser);
 const leo = new Physiotherapist("Leo", leoUser);
+const leo2 = new Physiotherapist("LeoDos", leoUser);
 export const physiotherapists = [pablo, leo];
 
 //GUARDS
@@ -29,4 +30,59 @@ export const guards = [
 export const assignations = [
   new Assignation(guards[0], pablo),
   new Assignation(guards[1], leo),
+  new Assignation(guards[1], leo2),
 ];
+
+//PUBLIC FUNCTIONS
+export function getNextAssignationForUser(userId) {
+  const user = findUserById(userId);
+  const physiotherapist = physiotherapists.find((physiotherapist) =>
+    physiotherapist.isUser(user)
+  );
+
+  if (physiotherapist === undefined) {
+    throw new Error("El profesional no fue encontrado.");
+  }
+
+  const nextAssignation = assignations.find((assignation) =>
+    assignation.isAssignedTo(physiotherapist)
+  );
+
+  if (nextAssignation === undefined) {
+    throw new Error("No tiene próximas guardias asignadas.");
+  }
+
+  return nextAssignation;
+}
+
+export function getGuardAssignations(guardId) {
+  const guard = findGuardById(guardId);
+
+  const guardAssignations = assignations.filter((assignation) =>
+    assignation.isFor(guard)
+  );
+
+  return guardAssignations;
+}
+
+export function deleteGuard(guardId) {
+  const guard = findGuardById(guardId);
+  const guardIndex = guards.indexOf(guard);
+  guards.splice(guardIndex, 1);
+}
+
+export function findUserById(userId) {
+  const user = users.find((user) => user.hasId(userId));
+  if (!user) throw new Error("Usuario no encontrado.");
+
+  return user;
+}
+
+//PRIVATE FUNCTIONS
+
+function findGuardById(guardId) {
+  const guard = guards.find((guard) => String(guard.id) === guardId);
+  if (!guard) throw new Error("Guardia no encontrada.");
+
+  return guard;
+}
