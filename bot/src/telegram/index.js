@@ -84,7 +84,7 @@ bot.action(new RegExp("getGuardInformation"), (ctx) => {
 
 bot.action("getNextAssignedGuardForUser", (ctx) => {
   try {
-    const userId = findUser(ctx.update.callback_query.from.id);
+    const userId = ctx.update.callback_query.from.id;
     const nextAssignation = getNextAssignationForUser(userId);
     ctx.reply(`Su próxima asignación es ${nextAssignation.information()}`);
   } catch (error) {

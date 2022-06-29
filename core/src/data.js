@@ -11,7 +11,6 @@ export const users = [leoUser];
 //PHYSIOTHERAPIST
 const pablo = new Physiotherapist("Pablo", pabloUser);
 const leo = new Physiotherapist("Leo", leoUser);
-const leo2 = new Physiotherapist("LeoDos", leoUser);
 export const physiotherapists = [pablo, leo];
 
 //GUARDS
@@ -30,7 +29,6 @@ export const guards = [
 export const assignations = [
   new Assignation(guards[0], pablo),
   new Assignation(guards[1], leo),
-  new Assignation(guards[1], leo2),
 ];
 
 //PUBLIC FUNCTIONS
@@ -66,6 +64,14 @@ export function getGuardAssignations(guardId) {
 }
 
 export function deleteGuard(guardId) {
+  //delete guard assignations first
+  const guardAssignations = getGuardAssignations(guardId);
+  guardAssignations.forEach((guardAssignation) => {
+    const assignationIndex = assignations.indexOf(guardAssignation);
+    assignations.splice(assignationIndex, 1);
+  });
+
+  //delete guard at the end
   const guard = findGuardById(guardId);
   const guardIndex = guards.indexOf(guard);
   guards.splice(guardIndex, 1);

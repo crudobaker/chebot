@@ -7,6 +7,6 @@ export default class User {
   }
 
   hasId(id) {
-    return this.id === id;
+    return this.id == Number(id);
   }
 }
