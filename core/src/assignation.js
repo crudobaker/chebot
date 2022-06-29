@@ -8,7 +8,11 @@ export default class Assignation {
     return this.guard === guard;
   }
 
+  isAssignedTo(physiotherapist) {
+    return this.physiotherapist === physiotherapist;
+  }
+
   information() {
-    return `${this.guard.information()} - ${this.physiotherapist}`;
+    return `${this.guard.information()} - ${this.physiotherapist.getName()}`;
   }
 }
