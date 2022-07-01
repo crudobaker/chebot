@@ -161,7 +161,7 @@ bot.launch();
 //============================================================================
 /**
  * Reads params from the callback_query object from the context.
- * @params ctx: the Telegraf context
+ * @param {object} ctx: the Telegraf context
  * @return {Array} a list of number params
  */
 function readCallbackQueryParams(ctx) {
@@ -171,8 +171,8 @@ function readCallbackQueryParams(ctx) {
 
 /**
  * Creates the callback_query string data following the conventions.
- * @params {string} actionName: name of the bot action.
- * @params {array} params: a list of params to pass.
+ * @param {string} actionName: name of the bot action.
+ * @param {array} params: a list of params to pass.
  * @return {string} a string to use for the callback_query.
  */
 function createCallbackQuery(actionName, ...params) {
@@ -181,8 +181,8 @@ function createCallbackQuery(actionName, ...params) {
 
 /**
  * @param {string} text the button text
- * @param {strinf} action the button callback_query
- * @returns the structure of a Button with an action
+ * @param {string} action the button callback_query
+ * @return {object} the structure of a Button with an action
  */
 function newActionButton(text, action) {
   return {
@@ -193,7 +193,7 @@ function newActionButton(text, action) {
 
 /**
  * @param {string} text the button tester text
- * @returns the structure of a button without an action associated
+ * @return {object} the structure of a button without an action associated
  */
 function newValueButton(text) {
   return {
