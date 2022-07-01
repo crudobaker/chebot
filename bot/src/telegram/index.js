@@ -38,7 +38,7 @@ bot.command("hola", (ctx) => {
         [
           {
             text: "Mi Próxima Guardia a Cubrir",
-            callback_data: `getNextAssignedGuardForUser`,
+            callback_data: `getNextAssignedGuardForUser?params=${user.id}`,
           },
         ],
       ],
@@ -57,11 +57,11 @@ bot.action("getLoadedGuards", (ctx) => {
           },
           {
             text: "Info",
-            callback_data: `getGuardInformation?id=${guard.id}`,
+            callback_data: params("getGuardInformation", guard.id),
           },
           {
             text: "Borrar",
-            callback_data: `deleteGuard?id=${guard.id}`,
+            callback_data: params("deleteGuard", guard.id),
           },
         ]),
       },
@@ -79,11 +79,11 @@ bot.action("getNotAssignedGuards", (ctx) => {
         inline_keyboard: notAssignedGuards.map((guard) => [
           {
             text: guard.info(),
-            callback_data: "jjjj",
+            callback_data: "x",
           },
           {
             text: "Asignar",
-            callback_data: `showAssignOptionsForGuard?id=${guard.id}`,
+            callback_data: params("showAssignOptionsForGuard", guard.id),
           },
         ]),
       },
@@ -95,7 +95,7 @@ bot.action("getNotAssignedGuards", (ctx) => {
 
 bot.action(new RegExp("getGuardInformation"), (ctx) => {
   try {
-    const guardId = Number(ctx.update.callback_query.data.split("=")[1]);
+    const [guardId] = readParams(ctx);
     const guardAssignations = getGuardAssignations(guardId);
 
     if (guardAssignations.length) {
@@ -113,9 +113,9 @@ bot.action(new RegExp("getGuardInformation"), (ctx) => {
   }
 });
 
-bot.action("getNextAssignedGuardForUser", (ctx) => {
+bot.action(new RegExp("getNextAssignedGuardForUser"), (ctx) => {
   try {
-    const userId = Number(ctx.update.callback_query.from.id);
+    const [userId] = readParams(ctx);
     const nextAssignation = getNextAssignationForUser(userId);
     ctx.reply(`Su próxima asignación es ${nextAssignation.info()}`);
   } catch (error) {
@@ -124,13 +124,13 @@ bot.action("getNextAssignedGuardForUser", (ctx) => {
 });
 
 bot.action(new RegExp("deleteGuard"), (ctx) => {
-  const guardId = Number(ctx.update.callback_query.data.split("=")[1]);
+  const [guardId] = readParams(ctx);
   deleteGuard(guardId);
   ctx.reply(`Guardia eliminada exitosamente!`);
 });
 
 bot.action(new RegExp("showAssignOptionsForGuard"), (ctx) => {
-  const guardId = Number(ctx.update.callback_query.data.split("=")[1]);
+  const [guardId] = readParams(ctx);
   ctx.reply("Profesionales disponibles para asignar", {
     reply_markup: {
       inline_keyboard: physiotherapists.map((physiotherapist) => [
@@ -140,7 +140,11 @@ bot.action(new RegExp("showAssignOptionsForGuard"), (ctx) => {
         },
         {
           text: "Asignar",
-          callback_data: `assignGuardToPhysiotherapist?params=${guardId}|${physiotherapist.id}`,
+          callback_data: params(
+            "assignGuardToPhysiotherapist",
+            guardId,
+            physiotherapist.id
+          ),
         },
       ]),
     },
@@ -149,19 +153,35 @@ bot.action(new RegExp("showAssignOptionsForGuard"), (ctx) => {
 
 bot.action(new RegExp("assignGuardToPhysiotherapist"), (ctx) => {
   try {
-    const [guardId, physiotherapistId] = ctx.update.callback_query.data
-      .split("=")[1]
-      .split("|");
+    const [guardId, physiotherapistId] = readParams(ctx);
     const newAssignation = assignGuardToPhysiotherapist(
-      Number(guardId),
-      Number(physiotherapistId)
+      guardId,
+      physiotherapistId
     );
-    ctx.reply(
-      `Guardia asignada existosamente!\n${newAssignation.info()}`
-    );
+    ctx.reply(`Guardia asignada existosamente!\n${newAssignation.info()}`);
   } catch (error) {
     ctx.reply("Error al asignar la guardia.");
   }
 });
 
 bot.launch();
+
+/**
+ * Reads params from the callback_query object from the context.
+ * @params ctx: the Telegraf context
+ * @return array of number params
+ */
+function readParams(ctx) {
+  const params = ctx.update.callback_query.data.split("=")[1].split("|");
+  return params.map(Number);
+}
+
+/**
+ * Creates the callback_query string data following the conventions.
+ * @params {string} actionName: name of the bot action
+ * @params {array} params: a list of params to pass
+ * @return {string} a string to use for the callback_query
+ */
+function params(actionName, ...params) {
+  return `${actionName}?params=${params.join("|")}`;
+}
