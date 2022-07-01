@@ -16,7 +16,7 @@ export default class Assignation {
     return `${this.guard.information()} - ${this.physiotherapist.getName()}`;
   }
 
-  wasNotRealiced() {
-    return this.guard.wasCovered();
+  isAccomplish() {
+    return this.guard.alreadyHappened();
   }
 }

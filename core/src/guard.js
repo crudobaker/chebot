@@ -10,8 +10,8 @@ export default class Guard {
     return format(this.date, "dd/MM/yyyy");
   }
 
-  wasCovered() {
+  alreadyHappened() {
     const today = new Date();
-    return this.date.getTime() >= today.getTime();
+    return this.date.getTime() < today.getTime();
   }
 }

@@ -28,6 +28,7 @@ export const guards = [
 //ASSIGNATIONS
 export const assignations = [
   new Assignation(guards[0], pablo),
+  new Assignation(guards[6], pablo),
   new Assignation(guards[1], leo),
 ];
 
@@ -44,7 +45,7 @@ export function getNextAssignationForUser(userId) {
 
   const nextAssignation = assignations.find(
     (assignation) =>
-      assignation.isAssignedTo(physiotherapist) && assignation.wasNotRealiced()
+      assignation.isAssignedTo(physiotherapist) && !assignation.isAccomplish()
   );
 
   if (nextAssignation === undefined) {
