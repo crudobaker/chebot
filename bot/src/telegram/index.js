@@ -29,12 +29,14 @@ bot.command("hola", (ctx) => {
             callback_data: "getLoadedGuards",
           },
           {
-            text: "Mi Próxima Guardia a Cubrir",
-            callback_data: `getNextAssignedGuardForUser`,
-          },
-          {
             text: "Guardias para Asignar",
             callback_data: `getNotAssignedGuards`,
+          },
+        ],
+        [
+          {
+            text: "Mi Próxima Guardia a Cubrir",
+            callback_data: `getNextAssignedGuardForUser`,
           },
         ],
       ],

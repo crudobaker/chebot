@@ -55,8 +55,11 @@ export function getNextAssignationForUser(userId) {
   return nextAssignation;
 }
 
-export function getNotAssignedGuards(){
-  return [];
+export function getNotAssignedGuards() {
+  const isAssigned = (guard) =>
+    assignations.some((assignation) => assignation.isFor(guard));
+
+  return guards.filter((guard) => !isAssigned(guard));
 }
 
 export function getGuardAssignations(guardId) {
@@ -90,10 +93,13 @@ export function findUserById(userId) {
 }
 
 //PRIVATE FUNCTIONS
-
 function findGuardById(guardId) {
   const guard = guards.find((guard) => guard.id === guardId);
   if (!guard) throw new Error("Guardia no encontrada.");
 
   return guard;
+}
+
+function isAssigned(guard) {
+  return assignations.some((assignation) => assignation.isFor(guard));
 }
