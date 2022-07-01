@@ -13,6 +13,10 @@ import {
 const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);
 
+
+//============================================================================
+// BOT CONFIGURATION
+//============================================================================
 bot.help((ctx) => {
   ctx.reply(
     "Estas son mis acciones disponibles: \n\n/hola: Nos saludamos y te ofrezco las diferentes acciones para que comencemos a interactuar."
@@ -38,7 +42,10 @@ bot.command("hola", (ctx) => {
         [
           {
             text: "Mi Próxima Guardia a Cubrir",
-            callback_data: params("getNextAssignedGuardForUser", user.id),
+            callback_data: createCallbackQuery(
+              "getNextAssignedGuardForUser",
+              user.id
+            ),
           },
         ],
       ],
@@ -57,11 +64,11 @@ bot.action("getLoadedGuards", (ctx) => {
           },
           {
             text: "Info",
-            callback_data: params("getGuardInformation", guard.id),
+            callback_data: createCallbackQuery("getGuardInformation", guard.id),
           },
           {
             text: "Borrar",
-            callback_data: params("deleteGuard", guard.id),
+            callback_data: createCallbackQuery("deleteGuard", guard.id),
           },
         ]),
       },
@@ -83,7 +90,10 @@ bot.action("getNotAssignedGuards", (ctx) => {
           },
           {
             text: "Asignar",
-            callback_data: params("showAssignOptionsForGuard", guard.id),
+            callback_data: createCallbackQuery(
+              "showAssignOptionsForGuard",
+              guard.id
+            ),
           },
         ]),
       },
@@ -95,7 +105,7 @@ bot.action("getNotAssignedGuards", (ctx) => {
 
 bot.action(new RegExp("getGuardInformation"), (ctx) => {
   try {
-    const [guardId] = readParams(ctx);
+    const [guardId] = readCallbackQueryParams(ctx);
     const guardAssignations = getGuardAssignations(guardId);
 
     if (guardAssignations.length) {
@@ -115,7 +125,7 @@ bot.action(new RegExp("getGuardInformation"), (ctx) => {
 
 bot.action(new RegExp("getNextAssignedGuardForUser"), (ctx) => {
   try {
-    const [userId] = readParams(ctx);
+    const [userId] = readCallbackQueryParams(ctx);
     const nextAssignation = getNextAssignationForUser(userId);
     ctx.reply(`Su próxima asignación es ${nextAssignation.info()}`);
   } catch (error) {
@@ -124,13 +134,13 @@ bot.action(new RegExp("getNextAssignedGuardForUser"), (ctx) => {
 });
 
 bot.action(new RegExp("deleteGuard"), (ctx) => {
-  const [guardId] = readParams(ctx);
+  const [guardId] = readCallbackQueryParams(ctx);
   deleteGuard(guardId);
   ctx.reply(`Guardia eliminada exitosamente!`);
 });
 
 bot.action(new RegExp("showAssignOptionsForGuard"), (ctx) => {
-  const [guardId] = readParams(ctx);
+  const [guardId] = readCallbackQueryParams(ctx);
   ctx.reply("Profesionales disponibles para asignar", {
     reply_markup: {
       inline_keyboard: physiotherapists.map((physiotherapist) => [
@@ -140,7 +150,7 @@ bot.action(new RegExp("showAssignOptionsForGuard"), (ctx) => {
         },
         {
           text: "Asignar",
-          callback_data: params(
+          callback_data: createCallbackQuery(
             "assignGuardToPhysiotherapist",
             guardId,
             physiotherapist.id
@@ -153,7 +163,7 @@ bot.action(new RegExp("showAssignOptionsForGuard"), (ctx) => {
 
 bot.action(new RegExp("assignGuardToPhysiotherapist"), (ctx) => {
   try {
-    const [guardId, physiotherapistId] = readParams(ctx);
+    const [guardId, physiotherapistId] = readCallbackQueryParams(ctx);
     const newAssignation = assignGuardToPhysiotherapist(
       guardId,
       physiotherapistId
@@ -166,12 +176,16 @@ bot.action(new RegExp("assignGuardToPhysiotherapist"), (ctx) => {
 
 bot.launch();
 
+
+//============================================================================
+// BOT UTILS FUNCTIONS
+//============================================================================
 /**
  * Reads params from the callback_query object from the context.
  * @params ctx: the Telegraf context
- * @return array of number params
+ * @return {Array} a list of number params
  */
-function readParams(ctx) {
+function readCallbackQueryParams(ctx) {
   const params = ctx.update.callback_query.data.split("=")[1].split("|");
   return params.map(Number);
 }
@@ -182,6 +196,6 @@ function readParams(ctx) {
  * @params {array} params: a list of params to pass.
  * @return {string} a string to use for the callback_query.
  */
-function params(actionName, ...params) {
+function createCallbackQuery(actionName, ...params) {
   return `${actionName}?params=${params.join("|")}`;
 }

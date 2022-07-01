@@ -3,6 +3,9 @@ import Assignation from "core/src/assignation.js";
 import Physiotherapist from "core/src/physiotherapist.js";
 import User from "core/src/user.js";
 
+//============================================================================
+// DATA (Data Source)
+//============================================================================
 //USERS
 const leoUser = new User(1507587171, "Leonardo Martin", "Crudo", "leo_crudo");
 const pabloUser = new User(5159780344, "Pablo", "Tocalini", "pablo");
@@ -32,7 +35,9 @@ export const assignations = [
   new Assignation(guards[1], leo),
 ];
 
-//PUBLIC FUNCTIONS
+//============================================================================
+// BUSINESS FUNCTIONS
+//============================================================================
 export function getNextAssignationForUser(userId) {
   const user = findUserById(userId);
   const physiotherapist = physiotherapists.find((physiotherapist) =>
@@ -105,7 +110,9 @@ export function assignGuardToPhysiotherapist(guardId, physiotherapistId) {
   return newAssignation;
 }
 
-//PRIVATE FUNCTIONS
+//============================================================================
+// PRIVATE FUNCTIONS
+//============================================================================
 function findGuardById(guardId) {
   const guard = guards.find((guard) => guard.id === guardId);
   if (!guard) throw new Error("Guardia no encontrada.");
