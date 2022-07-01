@@ -5,8 +5,8 @@ import User from "core/src/user.js";
 
 //USERS
 const leoUser = new User(1507587171, "Leonardo Martin", "Crudo", "leo_crudo");
-const pabloUser = undefined;
-export const users = [leoUser];
+const pabloUser = new User(5159780344, "Pablo", "Tocalini", "pablo");
+export const users = [leoUser, pabloUser];
 
 //PHYSIOTHERAPIST
 const pablo = new Physiotherapist("Pablo", pabloUser);
@@ -28,6 +28,7 @@ export const guards = [
 //ASSIGNATIONS
 export const assignations = [
   new Assignation(guards[0], pablo),
+  new Assignation(guards[6], pablo),
   new Assignation(guards[1], leo),
 ];
 
@@ -42,8 +43,9 @@ export function getNextAssignationForUser(userId) {
     throw new Error("El profesional no fue encontrado.");
   }
 
-  const nextAssignation = assignations.find((assignation) =>
-    assignation.isAssignedTo(physiotherapist)
+  const nextAssignation = assignations.find(
+    (assignation) =>
+      assignation.isAssignedTo(physiotherapist) && !assignation.isAccomplish()
   );
 
   if (nextAssignation === undefined) {
@@ -55,7 +57,6 @@ export function getNextAssignationForUser(userId) {
 
 export function getGuardAssignations(guardId) {
   const guard = findGuardById(guardId);
-
   const guardAssignations = assignations.filter((assignation) =>
     assignation.isFor(guard)
   );
@@ -87,7 +88,7 @@ export function findUserById(userId) {
 //PRIVATE FUNCTIONS
 
 function findGuardById(guardId) {
-  const guard = guards.find((guard) => String(guard.id) === guardId);
+  const guard = guards.find((guard) => guard.id === guardId);
   if (!guard) throw new Error("Guardia no encontrada.");
 
   return guard;

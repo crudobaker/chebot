@@ -17,7 +17,7 @@ bot.help((ctx) => {
 });
 
 bot.command("hola", (ctx) => {
-  const user = findUserById(ctx.update.message.from.id);
+  const user = findUserById(Number(ctx.update.message.from.id));
 
   ctx.reply(`Hola ${user.firstName}. ¿Qué deseas hacer?`, {
     reply_markup: {
@@ -64,7 +64,7 @@ bot.action("getLoadedGuards", (ctx) => {
 
 bot.action(new RegExp("getGuardInformation"), (ctx) => {
   try {
-    const guardId = ctx.update.callback_query.data.split("=")[1];
+    const guardId = Number(ctx.update.callback_query.data.split("=")[1]);
     const guardAssignations = getGuardAssignations(guardId);
 
     if (guardAssignations.length) {
@@ -84,7 +84,7 @@ bot.action(new RegExp("getGuardInformation"), (ctx) => {
 
 bot.action("getNextAssignedGuardForUser", (ctx) => {
   try {
-    const userId = ctx.update.callback_query.from.id;
+    const userId = Number(ctx.update.callback_query.from.id);
     const nextAssignation = getNextAssignationForUser(userId);
     ctx.reply(`Su próxima asignación es ${nextAssignation.information()}`);
   } catch (error) {
@@ -93,7 +93,7 @@ bot.action("getNextAssignedGuardForUser", (ctx) => {
 });
 
 bot.action(new RegExp("deleteGuard"), (ctx) => {
-  const guardId = ctx.update.callback_query.data.split("=")[1];
+  const guardId = Number(ctx.update.callback_query.data.split("=")[1]);
   deleteGuard(guardId);
   ctx.reply(`Guardia eliminada exitosamente!`);
 });
