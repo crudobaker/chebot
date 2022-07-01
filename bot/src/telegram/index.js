@@ -38,7 +38,7 @@ bot.command("hola", (ctx) => {
         [
           {
             text: "Mi Próxima Guardia a Cubrir",
-            callback_data: `getNextAssignedGuardForUser?params=${user.id}`,
+            callback_data: params("getNextAssignedGuardForUser", user.id),
           },
         ],
       ],
@@ -178,9 +178,9 @@ function readParams(ctx) {
 
 /**
  * Creates the callback_query string data following the conventions.
- * @params {string} actionName: name of the bot action
- * @params {array} params: a list of params to pass
- * @return {string} a string to use for the callback_query
+ * @params {string} actionName: name of the bot action.
+ * @params {array} params: a list of params to pass.
+ * @return {string} a string to use for the callback_query.
  */
 function params(actionName, ...params) {
   return `${actionName}?params=${params.join("|")}`;
