@@ -6,7 +6,7 @@ export default class Guard {
     this.date = date;
   }
 
-  information() {
+  info() {
     return format(this.date, "dd/MM/yyyy");
   }
 

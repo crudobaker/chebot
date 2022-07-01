@@ -9,8 +9,8 @@ const pabloUser = new User(5159780344, "Pablo", "Tocalini", "pablo");
 export const users = [leoUser, pabloUser];
 
 //PHYSIOTHERAPIST
-const pablo = new Physiotherapist("Pablo", pabloUser);
-const leo = new Physiotherapist("Leo", leoUser);
+const pablo = new Physiotherapist(1, "Pablo", pabloUser);
+const leo = new Physiotherapist(2, "Leo", leoUser);
 export const physiotherapists = [pablo, leo];
 
 //GUARDS
@@ -92,14 +92,23 @@ export function findUserById(userId) {
   return user;
 }
 
+export function assignGuardToPhysiotherapist(guardId, physiotherapistId) {
+  const guard = findGuardById(guardId);
+  const physiotherapist = physiotherapists.find((physiotherapist) =>
+    physiotherapist.hasId(physiotherapistId)
+  );
+  if (!physiotherapist) {
+    throw new Error("Profesional no encontrado.");
+  }
+  const newAssignation = new Assignation(guard, physiotherapist);
+  assignations.push(newAssignation);
+  return newAssignation;
+}
+
 //PRIVATE FUNCTIONS
 function findGuardById(guardId) {
   const guard = guards.find((guard) => guard.id === guardId);
   if (!guard) throw new Error("Guardia no encontrada.");
 
   return guard;
-}
-
-function isAssigned(guard) {
-  return assignations.some((assignation) => assignation.isFor(guard));
 }

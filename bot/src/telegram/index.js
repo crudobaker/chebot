@@ -1,11 +1,13 @@
 import { Telegraf } from "telegraf";
 import {
-  findUserById,
   guards,
+  physiotherapists,
+  findUserById,
   getNextAssignationForUser,
   getGuardAssignations,
   deleteGuard,
   getNotAssignedGuards,
+  assignGuardToPhysiotherapist,
 } from "core/src/data.js";
 
 const token = process.env.BOT_TOKEN;
@@ -50,8 +52,8 @@ bot.action("getLoadedGuards", (ctx) => {
       reply_markup: {
         inline_keyboard: guards.map((guard) => [
           {
-            text: guard.information(),
-            callback_data: "jjjj",
+            text: guard.info(),
+            callback_data: "x",
           },
           {
             text: "Info",
@@ -76,16 +78,12 @@ bot.action("getNotAssignedGuards", (ctx) => {
       reply_markup: {
         inline_keyboard: notAssignedGuards.map((guard) => [
           {
-            text: guard.information(),
+            text: guard.info(),
             callback_data: "jjjj",
           },
           {
-            text: "Info",
-            callback_data: `getGuardInformation?id=${guard.id}`,
-          },
-          {
-            text: "Borrar",
-            callback_data: `deleteGuard?id=${guard.id}`,
+            text: "Asignar",
+            callback_data: `showAssignOptionsForGuard?id=${guard.id}`,
           },
         ]),
       },
@@ -129,6 +127,41 @@ bot.action(new RegExp("deleteGuard"), (ctx) => {
   const guardId = Number(ctx.update.callback_query.data.split("=")[1]);
   deleteGuard(guardId);
   ctx.reply(`Guardia eliminada exitosamente!`);
+});
+
+bot.action(new RegExp("showAssignOptionsForGuard"), (ctx) => {
+  const guardId = Number(ctx.update.callback_query.data.split("=")[1]);
+  ctx.reply("Profesionales disponibles para asignar", {
+    reply_markup: {
+      inline_keyboard: physiotherapists.map((physiotherapist) => [
+        {
+          text: physiotherapist.info(),
+          callback_data: "x",
+        },
+        {
+          text: "Asignar",
+          callback_data: `assignGuardToPhysiotherapist?params=${guardId}|${physiotherapist.id}`,
+        },
+      ]),
+    },
+  });
+});
+
+bot.action(new RegExp("assignGuardToPhysiotherapist"), (ctx) => {
+  try {
+    const [guardId, physiotherapistId] = ctx.update.callback_query.data
+      .split("=")[1]
+      .split("|");
+    const newAssignation = assignGuardToPhysiotherapist(
+      Number(guardId),
+      Number(physiotherapistId)
+    );
+    ctx.reply(
+      `Guardia asignada existosamente!\n${newAssignation.information()}`
+    );
+  } catch (error) {
+    ctx.reply("Error al asignar la guardia.");
+  }
 });
 
 bot.launch();
