@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rm -rf node_modules",
     "build": "npm install",
-    "bot": "nodemon src/telegram/index.js"
+    "bot": "source ~/.bash-profile && nodemon src/telegram/index.js"
   },
   "dependencies": {
     "core": "*",
