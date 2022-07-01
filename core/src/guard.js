@@ -12,6 +12,6 @@ export default class Guard {
 
   alreadyHappened() {
     const today = new Date();
-    return this.date.getTime() < today.getTime();
+    return this.date.getTime() < today.getTime(); //comentario de prueba
   }
 }
