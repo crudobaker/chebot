@@ -5,8 +5,8 @@ import User from "core/src/user.js";
 
 //USERS
 const leoUser = new User(1507587171, "Leonardo Martin", "Crudo", "leo_crudo");
-const pabloUser = undefined;
-export const users = [leoUser];
+const pabloUser = new User(5159780344, 'Pablo', 'Tocalini', "pablo")
+export const users = [leoUser, pabloUser];
 
 //PHYSIOTHERAPIST
 const pablo = new Physiotherapist("Pablo", pabloUser);
@@ -43,7 +43,7 @@ export function getNextAssignationForUser(userId) {
   }
 
   const nextAssignation = assignations.find((assignation) =>
-    assignation.isAssignedTo(physiotherapist)
+    assignation.isAssignedTo(physiotherapist) && assignation.wasNotRealiced()
   );
 
   if (nextAssignation === undefined) {
@@ -87,7 +87,7 @@ export function findUserById(userId) {
 //PRIVATE FUNCTIONS
 
 function findGuardById(guardId) {
-  const guard = guards.find((guard) => String(guard.id) === guardId);
+  const guard = guards.find((guard) => guard.id === Number(guardId));
   if (!guard) throw new Error("Guardia no encontrada.");
 
   return guard;

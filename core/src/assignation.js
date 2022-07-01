@@ -15,4 +15,8 @@ export default class Assignation {
   information() {
     return `${this.guard.information()} - ${this.physiotherapist.getName()}`;
   }
+
+  wasNotRealiced() {
+    return this.guard.wasCovered();
+  }
 }
