@@ -110,10 +110,7 @@ export function assignGuardToPhysiotherapist(guardId, physiotherapistId) {
   return newAssignation;
 }
 
-//============================================================================
-// PRIVATE FUNCTIONS
-//============================================================================
-function findGuardById(guardId) {
+export function findGuardById(guardId) {
   const guard = guards.find((guard) => guard.id === guardId);
   if (!guard) throw new Error("Guardia no encontrada.");
 

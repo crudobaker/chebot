@@ -3,6 +3,7 @@ import {
   guards,
   physiotherapists,
   findUserById,
+  findGuardById,
   getNextAssignationForUser,
   getGuardAssignations,
   deleteGuard,
@@ -12,7 +13,6 @@ import {
 
 const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);
-
 
 //============================================================================
 // BOT CONFIGURATION
@@ -30,23 +30,14 @@ bot.command("hola", (ctx) => {
     reply_markup: {
       inline_keyboard: [
         [
-          {
-            text: "Guardias Cargadas",
-            callback_data: "getLoadedGuards",
-          },
-          {
-            text: "Guardias para Asignar",
-            callback_data: `getNotAssignedGuards`,
-          },
+          newActionButton("Guardias Cargadas", "getLoadedGuards"),
+          newActionButton("Guardias para Asignar", "getNotAssignedGuards"),
         ],
         [
-          {
-            text: "Mi Próxima Guardia a Cubrir",
-            callback_data: createCallbackQuery(
-              "getNextAssignedGuardForUser",
-              user.id
-            ),
-          },
+          newActionButton(
+            "Mi Próxima Guardia a Cubrir",
+            createCallbackQuery("getNextAssignedGuardForUser", user.id)
+          ),
         ],
       ],
     },
@@ -58,18 +49,15 @@ bot.action("getLoadedGuards", (ctx) => {
     ctx.reply("Estos son los dias de guardias", {
       reply_markup: {
         inline_keyboard: guards.map((guard) => [
-          {
-            text: guard.info(),
-            callback_data: "x",
-          },
-          {
-            text: "Info",
-            callback_data: createCallbackQuery("getGuardInformation", guard.id),
-          },
-          {
-            text: "Borrar",
-            callback_data: createCallbackQuery("deleteGuard", guard.id),
-          },
+          newValueButton(guard.info()),
+          newActionButton(
+            "Info",
+            createCallbackQuery("getGuardInformation", guard.id)
+          ),
+          newActionButton(
+            "Borrar",
+            createCallbackQuery("deleteGuard", guard.id)
+          ),
         ]),
       },
     });
@@ -84,17 +72,11 @@ bot.action("getNotAssignedGuards", (ctx) => {
     ctx.reply("Estos son los días de guardias no asignados", {
       reply_markup: {
         inline_keyboard: notAssignedGuards.map((guard) => [
-          {
-            text: guard.info(),
-            callback_data: "x",
-          },
-          {
-            text: "Asignar",
-            callback_data: createCallbackQuery(
-              "showAssignOptionsForGuard",
-              guard.id
-            ),
-          },
+          newValueButton(guard.info()),
+          newActionButton(
+            "Asignar",
+            createCallbackQuery("showAssignOptionsForGuard", guard.id)
+          ),
         ]),
       },
     });
@@ -116,7 +98,8 @@ bot.action(new RegExp("getGuardInformation"), (ctx) => {
         `Estas son las asignaciones de la guardia:\n${guardAssignationsInformations}`
       );
     } else {
-      ctx.reply("La guardia no tiene asignaciones.");
+      const guard = findGuardById(guardId);
+      ctx.reply(`La guardia ${guard.info()} no tiene asignaciones.`);
     }
   } catch (error) {
     ctx.reply(error.message);
@@ -144,18 +127,15 @@ bot.action(new RegExp("showAssignOptionsForGuard"), (ctx) => {
   ctx.reply("Profesionales disponibles para asignar", {
     reply_markup: {
       inline_keyboard: physiotherapists.map((physiotherapist) => [
-        {
-          text: physiotherapist.info(),
-          callback_data: "x",
-        },
-        {
-          text: "Asignar",
-          callback_data: createCallbackQuery(
+        newValueButton(physiotherapist.info()),
+        newActionButton(
+          "Asignar",
+          createCallbackQuery(
             "assignGuardToPhysiotherapist",
             guardId,
             physiotherapist.id
-          ),
-        },
+          )
+        ),
       ]),
     },
   });
@@ -175,7 +155,6 @@ bot.action(new RegExp("assignGuardToPhysiotherapist"), (ctx) => {
 });
 
 bot.launch();
-
 
 //============================================================================
 // BOT UTILS FUNCTIONS
@@ -198,4 +177,18 @@ function readCallbackQueryParams(ctx) {
  */
 function createCallbackQuery(actionName, ...params) {
   return `${actionName}?params=${params.join("|")}`;
+}
+
+function newActionButton(text, action) {
+  return {
+    text,
+    callback_data: action,
+  };
+}
+
+function newValueButton(text) {
+  return {
+    text,
+    callback_data: "x", //we need to pass something here
+  };
 }
