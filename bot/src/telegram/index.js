@@ -100,7 +100,7 @@ bot.action(new RegExp("getGuardInformation"), (ctx) => {
 
     if (guardAssignations.length) {
       const guardAssignationsInformations = guardAssignations
-        .map((guardAssignation) => guardAssignation.information())
+        .map((guardAssignation) => guardAssignation.info())
         .join("\n");
       ctx.reply(
         `Estas son las asignaciones de la guardia:\n${guardAssignationsInformations}`
@@ -117,7 +117,7 @@ bot.action("getNextAssignedGuardForUser", (ctx) => {
   try {
     const userId = Number(ctx.update.callback_query.from.id);
     const nextAssignation = getNextAssignationForUser(userId);
-    ctx.reply(`Su próxima asignación es ${nextAssignation.information()}`);
+    ctx.reply(`Su próxima asignación es ${nextAssignation.info()}`);
   } catch (error) {
     ctx.reply(error.message);
   }
@@ -157,7 +157,7 @@ bot.action(new RegExp("assignGuardToPhysiotherapist"), (ctx) => {
       Number(physiotherapistId)
     );
     ctx.reply(
-      `Guardia asignada existosamente!\n${newAssignation.information()}`
+      `Guardia asignada existosamente!\n${newAssignation.info()}`
     );
   } catch (error) {
     ctx.reply("Error al asignar la guardia.");

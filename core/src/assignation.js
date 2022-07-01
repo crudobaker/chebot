@@ -12,8 +12,8 @@ export default class Assignation {
     return this.physiotherapist === physiotherapist;
   }
 
-  information() {
-    return `${this.guard.information()} - ${this.physiotherapist.getName()}`;
+  info() {
+    return `${this.guard.info()} - ${this.physiotherapist.info()}`;
   }
 
   isAccomplish() {
