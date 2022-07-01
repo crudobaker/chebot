@@ -179,6 +179,11 @@ function createCallbackQuery(actionName, ...params) {
   return `${actionName}?params=${params.join("|")}`;
 }
 
+/**
+ * @param {string} text the button text
+ * @param {strinf} action the button callback_query
+ * @returns the structure of a Button with an action
+ */
 function newActionButton(text, action) {
   return {
     text,
@@ -186,6 +191,10 @@ function newActionButton(text, action) {
   };
 }
 
+/**
+ * @param {string} text the button tester text
+ * @returns the structure of a button without an action associated
+ */
 function newValueButton(text) {
   return {
     text,
