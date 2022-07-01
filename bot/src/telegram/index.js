@@ -5,6 +5,7 @@ import {
   getNextAssignationForUser,
   getGuardAssignations,
   deleteGuard,
+  getNotAssignedGuards,
 } from "core/src/data.js";
 
 const token = process.env.BOT_TOKEN;
@@ -24,12 +25,16 @@ bot.command("hola", (ctx) => {
       inline_keyboard: [
         [
           {
-            text: "Consultar Guardias Cargadas",
+            text: "Guardias Cargadas",
             callback_data: "getLoadedGuards",
           },
           {
-            text: "Mi Próxima Guardia Asignada",
+            text: "Mi Próxima Guardia a Cubrir",
             callback_data: `getNextAssignedGuardForUser`,
+          },
+          {
+            text: "Guardias para Asignar",
+            callback_data: `getNotAssignedGuards`,
           },
         ],
       ],
@@ -59,6 +64,32 @@ bot.action("getLoadedGuards", (ctx) => {
     });
   } else {
     ctx.reply("No hay guardias cargadas");
+  }
+});
+
+bot.action("getNotAssignedGuards", (ctx) => {
+  const notAssignedGuards = getNotAssignedGuards();
+  if (notAssignedGuards.length > 0) {
+    ctx.reply("Estos son los días de guardias no asignados", {
+      reply_markup: {
+        inline_keyboard: notAssignedGuards.map((guard) => [
+          {
+            text: guard.information(),
+            callback_data: "jjjj",
+          },
+          {
+            text: "Info",
+            callback_data: `getGuardInformation?id=${guard.id}`,
+          },
+          {
+            text: "Borrar",
+            callback_data: `deleteGuard?id=${guard.id}`,
+          },
+        ]),
+      },
+    });
+  } else {
+    ctx.reply("No hay guardias sin asignar");
   }
 });
 

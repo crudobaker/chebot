@@ -55,6 +55,10 @@ export function getNextAssignationForUser(userId) {
   return nextAssignation;
 }
 
+export function getNotAssignedGuards(){
+  return [];
+}
+
 export function getGuardAssignations(guardId) {
   const guard = findGuardById(guardId);
   const guardAssignations = assignations.filter((assignation) =>
