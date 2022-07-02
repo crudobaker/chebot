@@ -60,6 +60,28 @@ export function getNextAssignationForUser(userId) {
   return nextAssignation;
 }
 
+export function getAllNextAssignationForUser(userId) {
+  const user = findUserById(userId);
+  const physiotherapist = physiotherapists.find((physiotherapist) =>
+    physiotherapist.isUser(user)
+  );
+
+  if (physiotherapist === undefined) {
+    throw new Error("El profesional no fue encontrado.");
+  }
+
+  const nextAssignations = assignations.filter(
+    (assignation) =>
+      assignation.isAssignedTo(physiotherapist) && !assignation.isAccomplish()
+  );
+
+  if (nextAssignations.length === 0) {
+    throw new Error("No tiene próximas guardias asignadas.");
+  }
+
+  return nextAssignations;
+}
+
 export function getNotAssignedGuards() {
   const isAssigned = (guard) =>
     assignations.some((assignation) => assignation.isFor(guard));

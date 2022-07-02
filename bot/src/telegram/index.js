@@ -5,6 +5,7 @@ import {
   findUserById,
   findGuardById,
   getNextAssignationForUser,
+  getAllNextAssignationForUser,
   getGuardAssignations,
   deleteGuard,
   getNotAssignedGuards,
@@ -35,8 +36,12 @@ bot.command("hola", (ctx) => {
         ],
         [
           newActionButton(
-            "Mi Próxima Guardia a Cubrir",
+            "Mi Próxima Guardia",
             createCallbackQuery("getNextAssignedGuardForUser", user.id)
+          ),
+          newActionButton(
+            "Mis Guardias",
+            createCallbackQuery("getAllNextAssignedGuardsForUser", user.id)
           ),
         ],
       ],
@@ -111,6 +116,22 @@ bot.action(new RegExp("getNextAssignedGuardForUser"), (ctx) => {
     const [userId] = readCallbackQueryParams(ctx);
     const nextAssignation = getNextAssignationForUser(userId);
     ctx.reply(`Su próxima asignación es ${nextAssignation.info()}`);
+  } catch (error) {
+    ctx.reply(error.message);
+  }
+});
+
+bot.action(new RegExp("getAllNextAssignedGuardsForUser"), (ctx) => {
+  try {
+    const [userId] = readCallbackQueryParams(ctx);
+    const nextAssignations = getAllNextAssignationForUser(userId);
+
+    const nextAssignationsInformations = nextAssignations
+      .map((assignation) => assignation.info())
+      .join("\n");
+    ctx.reply(
+      `Sus guardias asignaciones son:\n${nextAssignationsInformations}`
+    );
   } catch (error) {
     ctx.reply(error.message);
   }
