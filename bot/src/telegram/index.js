@@ -27,20 +27,20 @@ bot.help((ctx) => {
 bot.command("hola", (ctx) => {
   const user = findUserById(Number(ctx.update.message.from.id));
 
-  ctx.reply(`Hola ${user.firstName}. ¿Qué deseas hacer?`, {
+  ctx.reply(`Hola ${user.firstName} 👋. Soy JuanBot 🤖. ¿Qué deseas hacer?`, {
     reply_markup: {
       inline_keyboard: [
         [
-          newActionButton("Guardias Cargadas", "getLoadedGuards"),
-          newActionButton("Guardias para Asignar", "getNotAssignedGuards"),
+          newActionButton("Guardias Cargadas 🗂️", "getLoadedGuards"),
+          newActionButton("Guardias para Asignar 📝", "getNotAssignedGuards"),
         ],
         [
           newActionButton(
-            "Mi Próxima Guardia",
+            "Mi Próxima Guardia ⏰",
             createCallbackQuery("getNextAssignedGuardForUser", user.id)
           ),
           newActionButton(
-            "Mis Guardias",
+            "Mis Guardias 🗓️",
             createCallbackQuery("getAllNextAssignedGuardsForUser", user.id)
           ),
         ],
@@ -60,7 +60,7 @@ bot.action("getLoadedGuards", (ctx) => {
             createCallbackQuery("getGuardInformation", guard.id)
           ),
           newActionButton(
-            "Borrar",
+            "❌ Borrar",
             createCallbackQuery("deleteGuard", guard.id)
           ),
         ]),
@@ -79,7 +79,7 @@ bot.action("getNotAssignedGuards", (ctx) => {
         inline_keyboard: notAssignedGuards.map((guard) => [
           newValueButton(guard.info()),
           newActionButton(
-            "Asignar",
+            "Asignar ➕",
             createCallbackQuery("showAssignOptionsForGuard", guard.id)
           ),
         ]),
@@ -129,18 +129,21 @@ bot.action(new RegExp("getAllNextAssignedGuardsForUser"), (ctx) => {
     const nextAssignationsInformations = nextAssignations
       .map((assignation) => assignation.info())
       .join("\n");
-    ctx.reply(
-      `Sus guardias asignaciones son:\n${nextAssignationsInformations}`
-    );
+    ctx.reply(`Sus guardias asignadas son:\n${nextAssignationsInformations}`);
   } catch (error) {
     ctx.reply(error.message);
   }
 });
 
 bot.action(new RegExp("deleteGuard"), (ctx) => {
-  const [guardId] = readCallbackQueryParams(ctx);
-  deleteGuard(guardId);
-  ctx.reply(`Guardia eliminada exitosamente!`);
+  try {
+    const [guardId] = readCallbackQueryParams(ctx);
+    deleteGuard(guardId);
+    ctx.reply("Guardia eliminada exitosamente! ✅");
+  } catch (error) {
+    console.error(error);
+    ctx.reply("❗Error al eliminar la guardia.");
+  }
 });
 
 bot.action(new RegExp("showAssignOptionsForGuard"), (ctx) => {
@@ -150,7 +153,7 @@ bot.action(new RegExp("showAssignOptionsForGuard"), (ctx) => {
       inline_keyboard: physiotherapists.map((physiotherapist) => [
         newValueButton(physiotherapist.info()),
         newActionButton(
-          "Asignar",
+          "Asignar 🧑",
           createCallbackQuery(
             "assignGuardToPhysiotherapist",
             guardId,
@@ -169,9 +172,10 @@ bot.action(new RegExp("assignGuardToPhysiotherapist"), (ctx) => {
       guardId,
       physiotherapistId
     );
-    ctx.reply(`Guardia asignada existosamente!\n${newAssignation.info()}`);
+    ctx.reply(`Guardia asignada existosamente! ✅\n${newAssignation.info()}`);
   } catch (error) {
-    ctx.reply("Error al asignar la guardia.");
+    console.error(error);
+    ctx.reply(`❗${error.message}.`);
   }
 });
 

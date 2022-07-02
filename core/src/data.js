@@ -83,9 +83,6 @@ export function getAllNextAssignationForUser(userId) {
 }
 
 export function getNotAssignedGuards() {
-  const isAssigned = (guard) =>
-    assignations.some((assignation) => assignation.isFor(guard));
-
   return guards.filter((guard) => !isAssigned(guard));
 }
 
@@ -121,6 +118,11 @@ export function findUserById(userId) {
 
 export function assignGuardToPhysiotherapist(guardId, physiotherapistId) {
   const guard = findGuardById(guardId);
+
+  if (isAssigned(guard)) {
+    throw new Error("La guardia ya fue asignada.");
+  }
+  
   const physiotherapist = physiotherapists.find((physiotherapist) =>
     physiotherapist.hasId(physiotherapistId)
   );
@@ -137,4 +139,11 @@ export function findGuardById(guardId) {
   if (!guard) throw new Error("Guardia no encontrada.");
 
   return guard;
+}
+
+//============================================================================
+// PRIVATE FUNCTIONS
+//============================================================================
+function isAssigned(guard) {
+  return assignations.some((assignation) => assignation.isFor(guard));
 }
