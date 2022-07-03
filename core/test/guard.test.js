@@ -50,9 +50,11 @@ describe("Guardia Test", () => {
     const newGuard = new Guard(1, new Date());
     const physiotherapist = new Physiotherapist(1, "Test", user1);
 
-    newGuard.assignTo(physiotherapist);
+    const newAssignation = newGuard.assignTo(physiotherapist);
 
     expect(newGuard.isAssigned()).toBeTruthy();
+    expect(newAssignation.isAssignedTo(physiotherapist))
+    expect(newAssignation.isForGuard(newGuard))
   });
 
   test("a new guard has not got assignations", async () => {

@@ -5,7 +5,7 @@ export default class Guard {
   constructor(id, date) {
     this.id = id;
     this.date = date;
-    this.assignations = [];
+    this.assignations = []; //array of Physiotherapist
   }
 
   assignTo(physiotherapist) {
