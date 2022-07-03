@@ -4,7 +4,7 @@ export default class Assignation {
     this.physiotherapist = physiotherapist;
   }
 
-  isFor(guard) {
+  isForGuard(guard) {
     return this.guard === guard;
   }
 
@@ -12,11 +12,11 @@ export default class Assignation {
     return this.physiotherapist === physiotherapist;
   }
 
-  info() {
-    return `${this.guard.info()} - ${this.physiotherapist.info()}`;
+  assignedInfo() {
+    return this.physiotherapist.info();
   }
 
-  isAccomplish() {
-    return this.guard.alreadyHappened();
+  dateInfo() {
+    return this.guard.dateInfo();
   }
 }

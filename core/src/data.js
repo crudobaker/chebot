@@ -1,5 +1,4 @@
 import Guard from "core/src/guard.js";
-import Assignation from "core/src/assignation.js";
 import Physiotherapist from "core/src/physiotherapist.js";
 import User from "core/src/user.js";
 
@@ -29,11 +28,9 @@ export const guards = [
 ];
 
 //ASSIGNATIONS
-export const assignations = [
-  new Assignation(guards[0], pablo),
-  new Assignation(guards[6], pablo),
-  new Assignation(guards[1], leo),
-];
+guards[0].assignTo(pablo);
+guards[6].assignTo(pablo);
+guards[1].assignTo(leo);
 
 //============================================================================
 // BUSINESS FUNCTIONS
@@ -48,16 +45,18 @@ export function getNextAssignationForUser(userId) {
     throw new Error("El profesional no fue encontrado.");
   }
 
-  const nextAssignation = assignations.find(
-    (assignation) =>
-      assignation.isAssignedTo(physiotherapist) && !assignation.isAccomplish()
+  const nextGuard = guards.find(
+    (guard) => guard.isAssignedTo(physiotherapist) && !guard.alreadyHappened()
   );
 
-  if (nextAssignation === undefined) {
+  if (nextGuard === undefined) {
     throw new Error("No tiene próximas guardias asignadas.");
   }
 
-  return nextAssignation;
+  return {
+    user,
+    assignation: nextGuard.getAssignationForPhysiotherapist(physiotherapist),
+  };
 }
 
 export function getAllNextAssignationForUser(userId) {
@@ -70,47 +69,38 @@ export function getAllNextAssignationForUser(userId) {
     throw new Error("El profesional no fue encontrado.");
   }
 
-  const nextAssignations = assignations.filter(
-    (assignation) =>
-      assignation.isAssignedTo(physiotherapist) && !assignation.isAccomplish()
+  const nextGuards = guards.filter(
+    (guard) => guard.isAssignedTo(physiotherapist) && !guard.alreadyHappened()
   );
 
-  if (nextAssignations.length === 0) {
+  if (nextGuards.length === 0) {
     throw new Error("No tiene próximas guardias asignadas.");
   }
 
-  return nextAssignations;
+  return {
+    user,
+    assignations: nextGuards.flatMap((guard) => guard.getAssignations()),
+  };
 }
 
 export function getNotAssignedGuards() {
-  return guards.filter((guard) => !isAssigned(guard));
+  return guards.filter((guard) => !guard.isAssigned());
 }
 
 export function getGuardAssignations(guardId) {
   const guard = findGuardById(guardId);
-  const guardAssignations = assignations.filter((assignation) =>
-    assignation.isFor(guard)
-  );
-
-  return guardAssignations;
+  return { guard, assignations: guard.getAssignations() };
 }
 
 export function deleteGuard(guardId) {
-  //delete guard assignations first
-  const guardAssignations = getGuardAssignations(guardId);
-  guardAssignations.forEach((guardAssignation) => {
-    const assignationIndex = assignations.indexOf(guardAssignation);
-    assignations.splice(assignationIndex, 1);
-  });
-
-  //delete guard at the end
   const guard = findGuardById(guardId);
   const guardIndex = guards.indexOf(guard);
   guards.splice(guardIndex, 1);
+  return guard;
 }
 
 export function findUserById(userId) {
-  const user = users.find((user) => user.hasId(userId));
+  const user = users.find((user) => user.id === userId);
   if (!user) throw new Error("Usuario no encontrado.");
 
   return user;
@@ -118,32 +108,26 @@ export function findUserById(userId) {
 
 export function assignGuardToPhysiotherapist(guardId, physiotherapistId) {
   const guard = findGuardById(guardId);
+  const physiotherapist = findPhysiotherapistById(physiotherapistId);
 
-  if (isAssigned(guard)) {
-    throw new Error("La guardia ya fue asignada.");
-  }
-  
-  const physiotherapist = physiotherapists.find((physiotherapist) =>
-    physiotherapist.hasId(physiotherapistId)
-  );
-  if (!physiotherapist) {
-    throw new Error("Profesional no encontrado.");
-  }
-  const newAssignation = new Assignation(guard, physiotherapist);
-  assignations.push(newAssignation);
-  return newAssignation;
+  return { guard, assignation: guard.assignTo(physiotherapist) };
 }
 
-export function findGuardById(guardId) {
+//============================================================================
+// PRIVATE FUNCTIONS
+//============================================================================
+function findGuardById(guardId) {
   const guard = guards.find((guard) => guard.id === guardId);
   if (!guard) throw new Error("Guardia no encontrada.");
 
   return guard;
 }
 
-//============================================================================
-// PRIVATE FUNCTIONS
-//============================================================================
-function isAssigned(guard) {
-  return assignations.some((assignation) => assignation.isFor(guard));
+function findPhysiotherapistById(physiotherapistId) {
+  const physiotherapist = physiotherapists.find(
+    (physiotherapist) => physiotherapist.id === physiotherapistId
+  );
+  if (!physiotherapist) throw new Error("Profesional no encontrado.");
+
+  return physiotherapist;
 }

@@ -6,7 +6,7 @@ export default class User {
     this.userName = userName;
   }
 
-  hasId(id) {
-    return this.id == id;
+  info() {
+    return `${this.firstName} ${this.lastName}`;
   }
 }

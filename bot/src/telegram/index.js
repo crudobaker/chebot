@@ -3,7 +3,6 @@ import {
   guards,
   physiotherapists,
   findUserById,
-  findGuardById,
   getNextAssignationForUser,
   getAllNextAssignationForUser,
   getGuardAssignations,
@@ -54,7 +53,7 @@ bot.action("getLoadedGuards", (ctx) => {
     ctx.reply("Estos son los dias de guardias", {
       reply_markup: {
         inline_keyboard: guards.map((guard) => [
-          newValueButton(guard.info()),
+          newValueButton(guard.dateInfo()),
           newActionButton(
             "Info",
             createCallbackQuery("getGuardInformation", guard.id)
@@ -77,7 +76,7 @@ bot.action("getNotAssignedGuards", (ctx) => {
     ctx.reply("Estos son los días de guardias no asignados", {
       reply_markup: {
         inline_keyboard: notAssignedGuards.map((guard) => [
-          newValueButton(guard.info()),
+          newValueButton(guard.dateInfo()),
           newActionButton(
             "Asignar ➕",
             createCallbackQuery("showAssignOptionsForGuard", guard.id)
@@ -93,18 +92,17 @@ bot.action("getNotAssignedGuards", (ctx) => {
 bot.action(new RegExp("getGuardInformation"), (ctx) => {
   try {
     const [guardId] = readCallbackQueryParams(ctx);
-    const guardAssignations = getGuardAssignations(guardId);
+    const { guard, assignations } = getGuardAssignations(guardId);
 
-    if (guardAssignations.length) {
-      const guardAssignationsInformations = guardAssignations
-        .map((guardAssignation) => guardAssignation.info())
+    if (assignations.length) {
+      const assignationsInformations = assignations
+        .map((assignation) => assignation.assignedInfo())
         .join("\n");
       ctx.reply(
-        `Estas son las asignaciones de la guardia:\n${guardAssignationsInformations}`
+        `Estas son las asignaciones de la guardia ${guard.dateInfo()}:\n${assignationsInformations}`
       );
     } else {
-      const guard = findGuardById(guardId);
-      ctx.reply(`La guardia ${guard.info()} no tiene asignaciones.`);
+      ctx.reply(`La guardia ${guard.dateInfo()} no tiene asignaciones.`);
     }
   } catch (error) {
     ctx.reply(error.message);
@@ -114,8 +112,10 @@ bot.action(new RegExp("getGuardInformation"), (ctx) => {
 bot.action(new RegExp("getNextAssignedGuardForUser"), (ctx) => {
   try {
     const [userId] = readCallbackQueryParams(ctx);
-    const nextAssignation = getNextAssignationForUser(userId);
-    ctx.reply(`Su próxima asignación es ${nextAssignation.info()}`);
+    const { user, assignation } = getNextAssignationForUser(userId);
+    ctx.reply(
+      `${user.info()}, su próxima asignación es el ${assignation.dateInfo()}`
+    );
   } catch (error) {
     ctx.reply(error.message);
   }
@@ -124,12 +124,14 @@ bot.action(new RegExp("getNextAssignedGuardForUser"), (ctx) => {
 bot.action(new RegExp("getAllNextAssignedGuardsForUser"), (ctx) => {
   try {
     const [userId] = readCallbackQueryParams(ctx);
-    const nextAssignations = getAllNextAssignationForUser(userId);
+    const { user, assignations } = getAllNextAssignationForUser(userId);
 
-    const nextAssignationsInformations = nextAssignations
-      .map((assignation) => assignation.info())
+    const assignationsInformations = assignations
+      .map((assignation) => assignation.dateInfo())
       .join("\n");
-    ctx.reply(`Sus guardias asignadas son:\n${nextAssignationsInformations}`);
+    ctx.reply(
+      `${user.info()}, sus guardias asignadas son:\n${assignationsInformations}`
+    );
   } catch (error) {
     ctx.reply(error.message);
   }
@@ -138,8 +140,10 @@ bot.action(new RegExp("getAllNextAssignedGuardsForUser"), (ctx) => {
 bot.action(new RegExp("deleteGuard"), (ctx) => {
   try {
     const [guardId] = readCallbackQueryParams(ctx);
-    deleteGuard(guardId);
-    ctx.reply("Guardia eliminada exitosamente! ✅");
+    const deletedGuard = deleteGuard(guardId);
+    ctx.reply(
+      `La guardia ${deletedGuard.dateInfo()} fue eliminada exitosamente! ✅`
+    );
   } catch (error) {
     console.error(error);
     ctx.reply("❗Error al eliminar la guardia.");
@@ -168,11 +172,13 @@ bot.action(new RegExp("showAssignOptionsForGuard"), (ctx) => {
 bot.action(new RegExp("assignGuardToPhysiotherapist"), (ctx) => {
   try {
     const [guardId, physiotherapistId] = readCallbackQueryParams(ctx);
-    const newAssignation = assignGuardToPhysiotherapist(
+    const { guard, assignation } = assignGuardToPhysiotherapist(
       guardId,
       physiotherapistId
     );
-    ctx.reply(`Guardia asignada existosamente! ✅\n${newAssignation.info()}`);
+    ctx.reply(
+      `✅ La guardia ${guard.dateInfo()} fue asignada existosamente a ${assignation.assignedInfo()}`
+    );
   } catch (error) {
     console.error(error);
     ctx.reply(`❗${error.message}.`);

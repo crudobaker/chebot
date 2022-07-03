@@ -12,8 +12,4 @@ export default class Physiotherapist {
   info() {
     return `${this.user.firstName} ${this.user.lastName}`;
   }
-
-  hasId(id) {
-    return this.id === id;
-  }
 }
