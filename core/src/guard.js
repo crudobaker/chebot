@@ -6,12 +6,12 @@ export default class Guard {
     this.date = date;
   }
 
-  information() {
+  info() {
     return format(this.date, "dd/MM/yyyy");
   }
 
   alreadyHappened() {
     const today = new Date();
-    return this.date.getTime() < today.getTime();
+    return this.date.getTime() < today.getTime(); //comentario de prueba
   }
 }

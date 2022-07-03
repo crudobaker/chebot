@@ -1,5 +1,6 @@
 export default class Physiotherapist {
-  constructor(name, user) {
+  constructor(id, name, user) {
+    this.id = Number(id);
     this.name = name;
     this.user = user;
   }
@@ -8,7 +9,11 @@ export default class Physiotherapist {
     return this.user === user;
   }
 
-  getName() {
+  info() {
     return `${this.user.firstName} ${this.user.lastName}`;
+  }
+
+  hasId(id) {
+    return this.id === id;
   }
 }
