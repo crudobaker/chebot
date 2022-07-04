@@ -55,11 +55,11 @@ bot.action("getLoadedGuards", (ctx) => {
         inline_keyboard: guards.map((guard) => [
           newValueButton(guard.dateInfo()),
           newActionButton(
-            "Info",
+            "ℹ️",
             createCallbackQuery("getGuardInformation", guard.id)
           ),
           newActionButton(
-            "❌ Borrar",
+            "❌",
             createCallbackQuery("deleteGuard", guard.id)
           ),
         ]),
