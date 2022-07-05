@@ -58,10 +58,7 @@ bot.action("getLoadedGuards", (ctx) => {
             "ℹ️",
             createCallbackQuery("getGuardInformation", guard.id)
           ),
-          newActionButton(
-            "❌",
-            createCallbackQuery("deleteGuard", guard.id)
-          ),
+          newActionButton("❌", createCallbackQuery("deleteGuard", guard.id)),
         ]),
       },
     });
@@ -186,6 +183,10 @@ bot.action(new RegExp("assignGuardToPhysiotherapist"), (ctx) => {
 });
 
 bot.launch();
+
+// Enable graceful stop
+process.once("SIGINT", () => bot.stop("SIGINT"));
+process.once("SIGTERM", () => bot.stop("SIGTERM"));
 
 //============================================================================
 // BOT UTILS FUNCTIONS
