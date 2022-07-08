@@ -6,7 +6,7 @@ const user1 = new User(1, "John", "Doe", "john_doe");
 const user2 = new User(1, "Jane", "Doe", "jane_doe");
 
 describe("Guardia Test", () => {
-  test("assign a physiotherapist to a guard", async () => {
+  test("assign a physiotherapist to a guard", () => {
     const newGuard = new Guard(1, new Date());
     const physiotherapist = new Physiotherapist(1, "Test", user1);
 
@@ -15,19 +15,20 @@ describe("Guardia Test", () => {
     expect(newGuard.isAssignedTo(physiotherapist)).toBeTruthy();
   });
 
-  test("is not possible to assign twice a physiotherapist to a guard ", async () => {
+  test("is not possible to assign twice a physiotherapist to a guard ", () => {
     const newGuard = new Guard(1, new Date());
     const physiotherapist = new Physiotherapist(1, "Test", user1);
 
     newGuard.assignTo(physiotherapist);
-
+    
     expect(() => newGuard.assignTo(physiotherapist)).toThrow(
       new Error("La guardia ya se encuentra asignada al fisioterapeuta.")
     );
     expect(newGuard.amountOfAssignations()).toEqual(1);
+    expect(newGuard.isAssignedTo(physiotherapist).toBeTruthy);
   });
 
-  test("is possible to assign different physiotherapists to a guard ", async () => {
+  test("is possible to assign different physiotherapists to a guard ", () => {
     const newGuard = new Guard(1, new Date());
     const physiotherapist1 = new Physiotherapist(1, "Test", user1);
     const physiotherapist2 = new Physiotherapist(2, "Tes2", user2);
@@ -40,13 +41,15 @@ describe("Guardia Test", () => {
     expect(newGuard.isAssignedTo(physiotherapist2)).toBeTruthy();
   });
 
-  test("a new guard is not assigned", async () => {
+  test("a new guard is not assigned", () => {
     const newGuard = new Guard(1, new Date());
 
-    expect(newGuard.isAssigned()).toBeFalsy();
+    const isGuardAssigned = newGuard.isAssigned();
+
+    expect(isGuardAssigned).toBeFalsy();
   });
 
-  test("after assign a physiotherapist to a guard, it is assigned", async () => {
+  test("after assign a physiotherapist to a guard, it is assigned", () => {
     const newGuard = new Guard(1, new Date());
     const physiotherapist = new Physiotherapist(1, "Test", user1);
 
@@ -57,13 +60,13 @@ describe("Guardia Test", () => {
     expect(newAssignation.isForGuard(newGuard))
   });
 
-  test("a new guard has not got assignations", async () => {
+  test("a new guard has not got assignations", () => {
     const newGuard = new Guard(1, new Date());
 
     expect(newGuard.getAssignations().length).toEqual(0);
   });
 
-  test("after assign a physiotherapist to a guard, it has an assignation", async () => {
+  test("after assign a physiotherapist to a guard, it has an assignation", () => {
     const newGuard = new Guard(1, new Date());
     const physiotherapist = new Physiotherapist(1, "Test", user1);
 
