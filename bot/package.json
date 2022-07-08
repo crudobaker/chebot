@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "core": "*",
-    "telegraf": "^4.7.0"
+    "telegraf": "^4.8.5"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
