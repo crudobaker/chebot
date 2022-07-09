@@ -9,6 +9,10 @@ export default class Guard {
   }
 
   assignTo(physiotherapist) {
+    if(this.alreadyHappened()) {
+      throw new Error("La guardia ya pasó.");
+    }
+    
     if (this.isAssignedTo(physiotherapist)) {
       throw new Error("La guardia ya se encuentra asignada al fisioterapeuta.");
     }
@@ -49,5 +53,9 @@ export default class Guard {
       return new Assignation(this, physiotherapist);
     }
     throw new Error("La guardia no se encuentra asignada al fisioterapeuta.");
+  }
+
+  isCover() {
+    return this.assignations.length == 2;
   }
 }
