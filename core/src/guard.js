@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import Assignation from "core/src/assignation.js";
 
+const AMOUNT_OF_ASSIGNATIONS_TO_BE_COVERED = 2;
 export default class Guard {
   constructor(id, date) {
     this.id = id;
@@ -9,6 +10,10 @@ export default class Guard {
   }
 
   assignTo(physiotherapist) {
+    if(this.alreadyHappened()) {
+      throw new Error("La guardia ya pasó.");
+    }
+    
     if (this.isAssignedTo(physiotherapist)) {
       throw new Error("La guardia ya se encuentra asignada al fisioterapeuta.");
     }
@@ -49,5 +54,9 @@ export default class Guard {
       return new Assignation(this, physiotherapist);
     }
     throw new Error("La guardia no se encuentra asignada al fisioterapeuta.");
+  }
+
+  isCover() {
+    return this.assignations.length == AMOUNT_OF_ASSIGNATIONS_TO_BE_COVERED;
   }
 }
