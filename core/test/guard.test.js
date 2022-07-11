@@ -114,7 +114,7 @@ describe("Guardia Test", () => {
     expect(newGuard.isCover()).toBeFalsy();
   })
 
-  test("a guard with assigment is covered", () => {
+  test("a guard with two assigments is covered", () => {
     const newGuard = new Guard(1, tomorrow);
     const physiotherapist1 = new Physiotherapist(1, "Test", user1);
     const physiotherapist2 = new Physiotherapist(2, "Test", user2);
