@@ -12,6 +12,8 @@ const leoUser = agenda.createUser(
   "leo_crudo"
 );
 const pabloUser = agenda.createUser("5159780344", "Pablo", "Tocalini", "pablo");
+
+//this user does not exist really but we need at least three users to test some scenarios.
 agenda.createUser("xxxxxxxx", "John", "Doe", "john_doe");
 
 //GUARDS

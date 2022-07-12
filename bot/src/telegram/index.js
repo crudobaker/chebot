@@ -180,7 +180,7 @@ process.once("SIGTERM", () => bot.stop("SIGTERM"));
 /**
  * Reads params from the callback_query object from the context.
  * @param {object} ctx: the Telegraf context
- * @return {Array} a list of number params
+ * @return {Array} a list of params (string type)
  */
 function readCallbackQueryParams(ctx) {
   return ctx.update.callback_query.data.split("=")[1].split("|");
