@@ -8,8 +8,8 @@
     "bot"
   ],
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "test-win": "set NODE_OPTIONS=--experimental-vm-modules && jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --collect-coverage",
+    "test-win": "set NODE_OPTIONS=--experimental-vm-modules && jest --collect-coverage",
     "clean": "rm -rf node_modules && npm run clean --workspaces",
     "build": "npm install && npm run build --workspaces",
     "bot": "cd bot && npm run bot",
