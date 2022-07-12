@@ -12,6 +12,7 @@ const leoUser = agenda.createUser(
   "leo_crudo"
 );
 const pabloUser = agenda.createUser("5159780344", "Pablo", "Tocalini", "pablo");
+agenda.createUser("xxxxxxxx", "John", "Doe", "john_doe");
 
 //GUARDS
 const oneDayInMiliseconds = 60 * 60 * 24 * 1000;
