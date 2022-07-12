@@ -1,6 +1,8 @@
 import { format } from "date-fns";
 import Assignation from "core/src/model/assignation.js";
 
+const AMOUNT_OF_ASSIGNATIONS_TO_BE_COVERED = 2;
+
 export default class Guard {
   constructor(id, date) {
     this.id = id;
@@ -10,7 +12,6 @@ export default class Guard {
 
   assignTo(user) {
     if (this.alreadyHappened()) {
-      console.log(`AlreadyHappend: ${this.dateInfo()}`);
       throw new Error("La guardia ya pasó.");
     }
 
@@ -65,6 +66,6 @@ export default class Guard {
   }
 
   isCover() {
-    return this.assignations.length == 2;
+    return this.assignations.length === AMOUNT_OF_ASSIGNATIONS_TO_BE_COVERED;
   }
 }
