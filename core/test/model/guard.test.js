@@ -1,5 +1,5 @@
-import Guard from "../src/guard.js";
-import User from "../src/user.js";
+import Guard from "../../src/model/guard.js";
+import User from "../../src/model/user.js";
 
 const user1 = new User(1, "John", "Doe", "john_doe");
 const user2 = new User(1, "Jane", "Doe", "jane_doe");

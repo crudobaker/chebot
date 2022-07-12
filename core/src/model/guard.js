@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import Assignation from "core/src/assignation.js";
+import Assignation from "core/src/model/assignation.js";
 
 export default class Guard {
   constructor(id, date) {
@@ -10,6 +10,7 @@ export default class Guard {
 
   assignTo(user) {
     if (this.alreadyHappened()) {
+      console.log(`AlreadyHappend: ${this.dateInfo()}`);
       throw new Error("La guardia ya pasó.");
     }
 
@@ -31,6 +32,10 @@ export default class Guard {
 
   dateInfo() {
     return format(this.date, "dd/MM/yyyy");
+  }
+
+  getDate() {
+    return this.date;
   }
 
   alreadyHappened() {
