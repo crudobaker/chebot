@@ -1,5 +1,4 @@
 import Guard from "core/src/guard.js";
-import Physiotherapist from "core/src/physiotherapist.js";
 import User from "core/src/user.js";
 
 //============================================================================
@@ -9,11 +8,6 @@ import User from "core/src/user.js";
 const leoUser = new User(1507587171, "Leonardo Martin", "Crudo", "leo_crudo");
 const pabloUser = new User(5159780344, "Pablo", "Tocalini", "pablo");
 export const users = [leoUser, pabloUser];
-
-//PHYSIOTHERAPIST
-const pablo = new Physiotherapist(1, "Pablo", pabloUser);
-const leo = new Physiotherapist(2, "Leo", leoUser);
-export const physiotherapists = [pablo, leo];
 
 //GUARDS
 const oneDayInMiliseconds = 60 * 60 * 24 * 1000;
@@ -28,25 +22,17 @@ export const guards = [
 ];
 
 //ASSIGNATIONS
-guards[0].assignTo(pablo);
-guards[6].assignTo(pablo);
-guards[1].assignTo(leo);
+guards[2].assignTo(leoUser);
+guards[2].assignTo(pabloUser);
 
 //============================================================================
 // BUSINESS FUNCTIONS
 //============================================================================
 export function getNextAssignationForUser(userId) {
   const user = findUserById(userId);
-  const physiotherapist = physiotherapists.find((physiotherapist) =>
-    physiotherapist.isUser(user)
-  );
-
-  if (physiotherapist === undefined) {
-    throw new Error("El profesional no fue encontrado.");
-  }
 
   const nextGuard = guards.find(
-    (guard) => guard.isAssignedTo(physiotherapist) && !guard.alreadyHappened()
+    (guard) => guard.isAssignedTo(user) && !guard.alreadyHappened()
   );
 
   if (nextGuard === undefined) {
@@ -55,22 +41,15 @@ export function getNextAssignationForUser(userId) {
 
   return {
     user,
-    assignation: nextGuard.getAssignationForPhysiotherapist(physiotherapist),
+    assignation: nextGuard.getAssignationForUser(user),
   };
 }
 
 export function getAllNextAssignationForUser(userId) {
   const user = findUserById(userId);
-  const physiotherapist = physiotherapists.find((physiotherapist) =>
-    physiotherapist.isUser(user)
-  );
-
-  if (physiotherapist === undefined) {
-    throw new Error("El profesional no fue encontrado.");
-  }
 
   const nextGuards = guards.filter(
-    (guard) => guard.isAssignedTo(physiotherapist) && !guard.alreadyHappened()
+    (guard) => guard.isAssignedTo(user) && !guard.alreadyHappened()
   );
 
   if (nextGuards.length === 0) {
@@ -79,7 +58,7 @@ export function getAllNextAssignationForUser(userId) {
 
   return {
     user,
-    assignations: nextGuards.flatMap((guard) => guard.getAssignations()),
+    assignations: nextGuards.map((guard) => guard.getAssignationForUser(user)),
   };
 }
 
@@ -106,11 +85,10 @@ export function findUserById(userId) {
   return user;
 }
 
-export function assignGuardToPhysiotherapist(guardId, physiotherapistId) {
+export function assignGuardToUser(guardId, user) {
   const guard = findGuardById(guardId);
-  const physiotherapist = findPhysiotherapistById(physiotherapistId);
 
-  return { guard, assignation: guard.assignTo(physiotherapist) };
+  return { guard, assignation: guard.assignTo(user) };
 }
 
 //============================================================================
@@ -121,13 +99,4 @@ function findGuardById(guardId) {
   if (!guard) throw new Error("Guardia no encontrada.");
 
   return guard;
-}
-
-function findPhysiotherapistById(physiotherapistId) {
-  const physiotherapist = physiotherapists.find(
-    (physiotherapist) => physiotherapist.id === physiotherapistId
-  );
-  if (!physiotherapist) throw new Error("Profesional no encontrado.");
-
-  return physiotherapist;
 }

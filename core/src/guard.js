@@ -5,24 +5,28 @@ export default class Guard {
   constructor(id, date) {
     this.id = id;
     this.date = date;
-    this.assignations = []; //array of Physiotherapist
+    this.assignations = [];
   }
 
-  assignTo(physiotherapist) {
-    if(this.alreadyHappened()) {
+  assignTo(user) {
+    if (this.alreadyHappened()) {
       throw new Error("La guardia ya pasó.");
     }
-    
-    if (this.isAssignedTo(physiotherapist)) {
-      throw new Error("La guardia ya se encuentra asignada al fisioterapeuta.");
-    }
-    this.assignations.push(physiotherapist);
 
-    return new Assignation(this, physiotherapist);
+    if (this.isAssignedTo(user)) {
+      throw new Error("La guardia ya se encuentra asignada al usuario.");
+    }
+
+    const newAssignation = new Assignation(this, user);
+    this.assignations.push(newAssignation);
+
+    return newAssignation;
   }
 
-  isAssignedTo(physiotherapist) {
-    return this.assignations.includes(physiotherapist);
+  isAssignedTo(user) {
+    return this.assignations.some((assignation) =>
+      assignation.isAssignedTo(user)
+    );
   }
 
   dateInfo() {
@@ -39,20 +43,20 @@ export default class Guard {
   }
 
   getAssignations() {
-    return this.assignations.map(
-      (physiotherapist) => new Assignation(this, physiotherapist)
-    );
+    return this.assignations;
   }
 
   isAssigned() {
     return this.assignations.length > 0;
   }
 
-  getAssignationForPhysiotherapist(physiotherapist) {
-    if (this.isAssignedTo(physiotherapist)) {
-      return new Assignation(this, physiotherapist);
+  getAssignationForUser(user) {
+    if (this.isAssignedTo(user)) {
+      return this.assignations.find((assignation) =>
+        assignation.isAssignedTo(user)
+      );
     }
-    throw new Error("La guardia no se encuentra asignada al fisioterapeuta.");
+    throw new Error("La guardia no se encuentra asignada al usuario.");
   }
 
   isCover() {

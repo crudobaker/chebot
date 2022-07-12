@@ -1,14 +1,14 @@
 import { Telegraf } from "telegraf";
 import {
+  users,
   guards,
-  physiotherapists,
   findUserById,
   getNextAssignationForUser,
   getAllNextAssignationForUser,
   getGuardAssignations,
   deleteGuard,
   getNotAssignedGuards,
-  assignGuardToPhysiotherapist,
+  assignGuardToUser,
 } from "core/src/data.js";
 
 const token = process.env.BOT_TOKEN;
@@ -149,16 +149,16 @@ bot.action(new RegExp("deleteGuard"), (ctx) => {
 
 bot.action(new RegExp("showAssignOptionsForGuard"), (ctx) => {
   const [guardId] = readCallbackQueryParams(ctx);
-  ctx.reply("Profesionales disponibles para asignar", {
+  ctx.reply("Usuarios disponibles para asignar", {
     reply_markup: {
-      inline_keyboard: physiotherapists.map((physiotherapist) => [
-        newValueButton(physiotherapist.info()),
+      inline_keyboard: users.map((user) => [
+        newValueButton(user.info()),
         newActionButton(
           "Asignar 🧑",
           createCallbackQuery(
-            "assignGuardToPhysiotherapist",
+            "assignGuardToUser",
             guardId,
-            physiotherapist.id
+            user.id
           )
         ),
       ]),
@@ -166,12 +166,12 @@ bot.action(new RegExp("showAssignOptionsForGuard"), (ctx) => {
   });
 });
 
-bot.action(new RegExp("assignGuardToPhysiotherapist"), (ctx) => {
+bot.action(new RegExp("assignGuardToUser"), (ctx) => {
   try {
-    const [guardId, physiotherapistId] = readCallbackQueryParams(ctx);
-    const { guard, assignation } = assignGuardToPhysiotherapist(
+    const [guardId, userId] = readCallbackQueryParams(ctx);
+    const { guard, assignation } = assignGuardToUser(
       guardId,
-      physiotherapistId
+      userId
     );
     ctx.reply(
       `✅ La guardia ${guard.dateInfo()} fue asignada existosamente a ${assignation.assignedInfo()}`

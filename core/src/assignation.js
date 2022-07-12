@@ -1,19 +1,19 @@
 export default class Assignation {
-  constructor(guard, physiotherapist) {
+  constructor(guard, user) {
     this.guard = guard;
-    this.physiotherapist = physiotherapist;
+    this.user = user;
   }
 
   isForGuard(guard) {
     return this.guard === guard;
   }
 
-  isAssignedTo(physiotherapist) {
-    return this.physiotherapist === physiotherapist;
+  isAssignedTo(user) {
+    return this.user === user;
   }
 
   assignedInfo() {
-    return this.physiotherapist.info();
+    return this.user.info();
   }
 
   dateInfo() {
