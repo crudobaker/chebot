@@ -16,10 +16,7 @@ export default class GuardsAgenda {
   }
 
   getNextAssignationForUser(userId) {
-    const user = this.repository.findUserById(userId);
-    if (user === undefined) {
-      throw new Error("Usuario no encontrado.");
-    }
+    const user = this.findUserById(userId);
 
     const nextGuards = this.repository.findGuardsBy(
       (guard) => guard.isAssignedTo(user) && !guard.alreadyHappened()
@@ -68,8 +65,9 @@ export default class GuardsAgenda {
     return this.repository.removeGuardById(guardId);
   }
 
-  assignGuardToUser(guardId, user) {
+  assignGuardToUser(guardId, userId) {
     const guard = this.findGuardById(guardId);
+    const user = this.findUserById(userId);
     const assignation = guard.assignTo(user);
     return { guard, assignation };
   }

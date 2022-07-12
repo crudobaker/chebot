@@ -27,7 +27,7 @@ agenda.createGuard(new Date(new Date().getTime() + oneDayInMiliseconds * 5));
 agenda.createGuard(new Date(new Date().getTime() + oneDayInMiliseconds * 6));
 
 //ASSIGNATIONS
-agenda.assignGuardToUser(guard.id, leoUser);
-agenda.assignGuardToUser(guard.id, pabloUser);
+agenda.assignGuardToUser(guard.id, leoUser.id);
+agenda.assignGuardToUser(guard.id, pabloUser.id);
 
 export default agenda;

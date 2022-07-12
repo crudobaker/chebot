@@ -2,7 +2,8 @@ import Guard from "../../src/model/guard.js";
 import User from "../../src/model/user.js";
 
 const user1 = new User(1, "John", "Doe", "john_doe");
-const user2 = new User(1, "Jane", "Doe", "jane_doe");
+const user2 = new User(2, "Jane", "Doe", "jane_doe");
+const user3 = new User(3, "Ricky", "James", "ricky_james");
 const yesterday = new Date(new Date().getTime() - 1000 * 60 * 60 * 24);
 const tomorrow = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);
 
@@ -111,5 +112,12 @@ describe("Guardia Test", () => {
     newGuard.assignTo(user2);
 
     expect(newGuard.isCover()).toBeTruthy();
+  });
+
+  test("is not possible to assign more than two users to a guard", () => {
+    const newGuard = new Guard(1, tomorrow);
+    newGuard.assignTo(user1);
+    newGuard.assignTo(user2);
+    expect(() => newGuard.assignTo(user3)).toThrow(new Error("La guardia ya se encuentra cubierta."));
   });
 });

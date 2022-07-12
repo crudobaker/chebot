@@ -19,6 +19,10 @@ export default class Guard {
       throw new Error("La guardia ya se encuentra asignada al usuario.");
     }
 
+    if (this.isCover()) {
+      throw new Error("La guardia ya se encuentra cubierta.");
+    }
+
     const newAssignation = new Assignation(this, user);
     this.assignations.push(newAssignation);
 

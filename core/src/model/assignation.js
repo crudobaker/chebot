@@ -13,6 +13,7 @@ export default class Assignation {
   }
 
   assignedInfo() {
+    console.log(`assignedInfo ${JSON.stringify(this.user)}`);
     return this.user.info();
   }
 
