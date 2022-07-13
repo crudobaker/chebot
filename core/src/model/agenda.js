@@ -1,7 +1,3 @@
-import Guard from "core/src/model/guard.js";
-import User from "core/src/model/user.js";
-import IdManager from "core/src/id-manager.js";
-
 export default class GuardsAgenda {
   constructor(repository) {
     this.repository = repository;
@@ -87,15 +83,15 @@ export default class GuardsAgenda {
   }
 
   createUser(telegramId, firstName, lastName, userName) {
-    const user = new User(telegramId, firstName, lastName, userName);
-    this.repository.saveUser(user);
-    return user;
+    return this.repository.createUser(
+      telegramId,
+      firstName,
+      lastName,
+      userName
+    );
   }
 
   createGuard(date) {
-    const guardId = IdManager.randomId(date);
-    const guard = new Guard(guardId, date);
-    this.repository.saveGuard(guard);
-    return guard;
+    return this.repository.createGuard(date);
   }
 }

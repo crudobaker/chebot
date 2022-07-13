@@ -1,3 +1,7 @@
+import IdManager from "core/src/id-manager.js";
+import Guard from "core/src/model/guard.js";
+import User from "core/src/model/user.js";
+
 export default class Repository {
   constructor() {
     this.users = [];
@@ -34,6 +38,19 @@ export default class Repository {
     const guardIndex = this.guards.indexOf(guard);
     guards.splice(guardIndex, 1);
     return guard;
+  }
+
+  createGuard(date) {
+    const guardId = IdManager.randomId(date);
+    const guard = new Guard(guardId, date);
+    this.saveGuard(guard);
+    return guard;
+  }
+
+  createUser(telegramId, firstName, lastName, userName) {
+    const user = new User(telegramId, firstName, lastName, userName);
+    this.saveUser(user);
+    return user;
   }
 
   saveUser(user) {

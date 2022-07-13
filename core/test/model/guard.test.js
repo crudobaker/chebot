@@ -7,7 +7,7 @@ const user3 = new User(3, "Ricky", "James", "ricky_james");
 const yesterday = new Date(new Date().getTime() - 1000 * 60 * 60 * 24);
 const tomorrow = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);
 
-describe("Guardia Test", () => {
+describe("Guard Test", () => {
   test("assign a user to a guard", () => {
     //arrange
     const newGuard = new Guard(1, tomorrow);
