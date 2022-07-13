@@ -3,6 +3,25 @@ export default class GuardsAgenda {
     this.repository = repository;
   }
 
+  // ################################################################################
+  // CREATIONS
+  // ################################################################################
+  createUser(telegramId, firstName, lastName, userName) {
+    return this.repository.createUser(
+      telegramId,
+      firstName,
+      lastName,
+      userName
+    );
+  }
+
+  createGuard(date) {
+    return this.repository.createGuard(date);
+  }
+
+  // ################################################################################
+  // GETTERS & FINDERS
+  // ################################################################################
   getAllGuards() {
     return this.repository.findAllGuards();
   }
@@ -11,6 +30,23 @@ export default class GuardsAgenda {
     return this.repository.findAllUsers();
   }
 
+  findGuardById(guardId) {
+    const guard = this.repository.findGuardById(guardId);
+    if (!guard) throw new Error("Guardia no encontrada.");
+
+    return guard;
+  }
+
+  findUserById(userId) {
+    const user = this.repository.findUserById(userId);
+    if (!user) throw new Error("Usuario no encontrado.");
+
+    return user;
+  }
+
+  // ################################################################################
+  // BUSINESS
+  // ################################################################################
   getNextAssignationForUser(userId) {
     const user = this.findUserById(userId);
 
@@ -66,32 +102,5 @@ export default class GuardsAgenda {
     const user = this.findUserById(userId);
     const assignation = guard.assignTo(user);
     return { guard, assignation };
-  }
-
-  findGuardById(guardId) {
-    const guard = this.repository.findGuardById(guardId);
-    if (!guard) throw new Error("Guardia no encontrada.");
-
-    return guard;
-  }
-
-  findUserById(userId) {
-    const user = this.repository.findUserById(userId);
-    if (!user) throw new Error("Usuario no encontrado.");
-
-    return user;
-  }
-
-  createUser(telegramId, firstName, lastName, userName) {
-    return this.repository.createUser(
-      telegramId,
-      firstName,
-      lastName,
-      userName
-    );
-  }
-
-  createGuard(date) {
-    return this.repository.createGuard(date);
   }
 }

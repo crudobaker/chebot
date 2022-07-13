@@ -77,4 +77,12 @@ describe("Agenda Test", () => {
     expect(guards.length).toBe(1);
     expect(guards.includes(guard)).toBeTruthy();
   });
+
+  test("gets the next guard for a particular user", () => {
+    //TODO
+  });
+
+  test("gets all the next guards for a particular user", () => {
+    //TODO
+  });
 });
