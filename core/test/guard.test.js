@@ -1,9 +1,9 @@
 import Guard from "../src/guard.js";
 import Physiotherapist from "../src/physiotherapist.js";
-import User from "../src/user.js";
+import User, { COORDINATOR_ROLE, PHYSIOTHERAPIST_ROLE } from "../src/user.js";
 
-const user1 = new User(1, "John", "Doe", "john_doe");
-const user2 = new User(1, "Jane", "Doe", "jane_doe");
+const user1 = new User(1, "John", "Doe", "john_doe", PHYSIOTHERAPIST_ROLE);
+const user2 = new User(1, "Jane", "Doe", "jane_doe", PHYSIOTHERAPIST_ROLE);
 const yesterday = new Date(new Date().getTime() - 1000 * 60 * 60 * 24);
 const tomorrow = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);
 
