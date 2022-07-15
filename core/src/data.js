@@ -1,13 +1,13 @@
 import Guard from "core/src/guard.js";
 import Physiotherapist from "core/src/physiotherapist.js";
-import User from "core/src/user.js";
+import User, { COORDINATOR_ROLE, PHYSIOTHERAPIST_ROLE } from "core/src/user.js";
 
 //============================================================================
 // DATA (Data Source)
 //============================================================================
 //USERS
-const leoUser = new User(1507587171, "Leonardo Martin", "Crudo", "leo_crudo");
-const pabloUser = new User(5159780344, "Pablo", "Tocalini", "pablo", "Coordinador");
+const leoUser = new User(1507587171, "Leonardo Martin", "Crudo", "leo_crudo", PHYSIOTHERAPIST_ROLE);
+const pabloUser = new User(5159780344, "Pablo", "Tocalini", "pablo", COORDINATOR_ROLE);
 export const users = [leoUser, pabloUser];
 
 //PHYSIOTHERAPIST

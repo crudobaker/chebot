@@ -64,7 +64,7 @@ bot.command("hola", (ctx) => {
     },
   };
 
-  if (user.role === "Coordinador") {
+  if (user.isCoordinator()) {
     ctx.reply(message, userOptions);
   } else {
     ctx.reply(message, userOptionsNoCoordinator);
