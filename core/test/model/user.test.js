@@ -1,4 +1,4 @@
-import User, { COORDINATOR_ROLE, PHYSIOTHERAPIST_ROLE } from "../src/user.js";
+import User, { COORDINATOR_ROLE, PHYSIOTHERAPIST_ROLE } from "../../src/model/user.js";
 
 describe("User Test", () => {
   test("a user with physiotherapist role is not a coordinator", () => {

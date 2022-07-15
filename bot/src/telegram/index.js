@@ -1,15 +1,5 @@
 import { Telegraf } from "telegraf";
-import {
-  guards,
-  physiotherapists,
-  findUserById,
-  getNextAssignationForUser,
-  getAllNextAssignationForUser,
-  getGuardAssignations,
-  deleteGuard,
-  getNotAssignedGuards,
-  assignGuardToPhysiotherapist,
-} from "core/src/data.js";
+import agenda from "core/src/index.js";
 
 const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);
@@ -24,7 +14,7 @@ bot.help((ctx) => {
 });
 
 bot.command("hola", (ctx) => {
-  const user = findUserById(Number(ctx.update.message.from.id));
+  const user = agenda.findUserById(String(ctx.update.message.from.id));
   const message = `Hola ${user.firstName} 👋. Soy JuanBot 🤖. ¿Qué deseas hacer?`;
   const userOptions = {
     reply_markup: {
@@ -72,6 +62,7 @@ bot.command("hola", (ctx) => {
 });
 
 bot.action("getLoadedGuards", (ctx) => {
+  const guards = agenda.getAllGuards();
   if (guards.length > 0) {
     ctx.reply("Estos son los dias de guardias", {
       reply_markup: {
@@ -91,7 +82,7 @@ bot.action("getLoadedGuards", (ctx) => {
 });
 
 bot.action("getNotAssignedGuards", (ctx) => {
-  const notAssignedGuards = getNotAssignedGuards();
+  const notAssignedGuards = agenda.getNotAssignedGuards();
   if (notAssignedGuards.length > 0) {
     ctx.reply("Estos son los días de guardias no asignados", {
       reply_markup: {
@@ -112,9 +103,9 @@ bot.action("getNotAssignedGuards", (ctx) => {
 bot.action(new RegExp("getGuardInformation"), (ctx) => {
   try {
     const [guardId] = readCallbackQueryParams(ctx);
-    const { guard, assignations } = getGuardAssignations(guardId);
+    const { guard, assignations } = agenda.getGuardAssignations(guardId);
 
-    if (assignations.length) {
+    if (assignations.length > 0) {
       const assignationsInformations = assignations
         .map((assignation) => assignation.assignedInfo())
         .join("\n");
@@ -132,7 +123,7 @@ bot.action(new RegExp("getGuardInformation"), (ctx) => {
 bot.action(new RegExp("getNextAssignedGuardForUser"), (ctx) => {
   try {
     const [userId] = readCallbackQueryParams(ctx);
-    const { user, assignation } = getNextAssignationForUser(userId);
+    const { user, assignation } = agenda.getNextAssignationForUser(userId);
     ctx.reply(
       `${user.info()}, su próxima asignación es el ${assignation.dateInfo()}`
     );
@@ -144,7 +135,7 @@ bot.action(new RegExp("getNextAssignedGuardForUser"), (ctx) => {
 bot.action(new RegExp("getAllNextAssignedGuardsForUser"), (ctx) => {
   try {
     const [userId] = readCallbackQueryParams(ctx);
-    const { user, assignations } = getAllNextAssignationForUser(userId);
+    const { user, assignations } = agenda.getAllNextAssignationForUser(userId);
 
     const assignationsInformations = assignations
       .map((assignation) => assignation.dateInfo())
@@ -160,7 +151,7 @@ bot.action(new RegExp("getAllNextAssignedGuardsForUser"), (ctx) => {
 bot.action(new RegExp("deleteGuard"), (ctx) => {
   try {
     const [guardId] = readCallbackQueryParams(ctx);
-    const deletedGuard = deleteGuard(guardId);
+    const deletedGuard = agenda.deleteGuard(guardId);
     ctx.reply(
       `La guardia ${deletedGuard.dateInfo()} fue eliminada exitosamente! ✅`
     );
@@ -172,36 +163,31 @@ bot.action(new RegExp("deleteGuard"), (ctx) => {
 
 bot.action(new RegExp("showAssignOptionsForGuard"), (ctx) => {
   const [guardId] = readCallbackQueryParams(ctx);
-  ctx.reply("Profesionales disponibles para asignar", {
+  ctx.reply("Usuarios disponibles para asignar", {
     reply_markup: {
-      inline_keyboard: physiotherapists.map((physiotherapist) => [
-        newValueButton(physiotherapist.info()),
-        newActionButton(
-          "Asignar 🧑",
-          createCallbackQuery(
-            "assignGuardToPhysiotherapist",
-            guardId,
-            physiotherapist.id
-          )
-        ),
-      ]),
+      inline_keyboard: agenda
+        .getAllUsers()
+        .map((user) => [
+          newValueButton(user.info()),
+          newActionButton(
+            "Asignar 🧑",
+            createCallbackQuery("assignGuardToUser", guardId, user.id)
+          ),
+        ]),
     },
   });
 });
 
-bot.action(new RegExp("assignGuardToPhysiotherapist"), (ctx) => {
+bot.action(new RegExp("assignGuardToUser"), (ctx) => {
   try {
-    const [guardId, physiotherapistId] = readCallbackQueryParams(ctx);
-    const { guard, assignation } = assignGuardToPhysiotherapist(
-      guardId,
-      physiotherapistId
-    );
+    const [guardId, userId] = readCallbackQueryParams(ctx);
+    const { guard, assignation } = agenda.assignGuardToUser(guardId, userId);
     ctx.reply(
       `✅ La guardia ${guard.dateInfo()} fue asignada existosamente a ${assignation.assignedInfo()}`
     );
   } catch (error) {
     console.error(error);
-    ctx.reply(`❗${error.message}.`);
+    ctx.reply(`❗${error.message}`);
   }
 });
 
@@ -217,11 +203,10 @@ process.once("SIGTERM", () => bot.stop("SIGTERM"));
 /**
  * Reads params from the callback_query object from the context.
  * @param {object} ctx: the Telegraf context
- * @return {Array} a list of number params
+ * @return {Array} a list of params (string type)
  */
 function readCallbackQueryParams(ctx) {
-  const params = ctx.update.callback_query.data.split("=")[1].split("|");
-  return params.map(Number);
+  return ctx.update.callback_query.data.split("=")[1].split("|");
 }
 
 /**
