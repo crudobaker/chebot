@@ -7,7 +7,7 @@ import User from "core/src/user.js";
 //============================================================================
 //USERS
 const leoUser = new User(1507587171, "Leonardo Martin", "Crudo", "leo_crudo");
-const pabloUser = new User(5159780344, "Pablo", "Tocalini", "pablo");
+const pabloUser = new User(5159780344, "Pablo", "Tocalini", "pablo", "Coordinador");
 export const users = [leoUser, pabloUser];
 
 //PHYSIOTHERAPIST
@@ -18,13 +18,13 @@ export const physiotherapists = [pablo, leo];
 //GUARDS
 const oneDayInMiliseconds = 60 * 60 * 24 * 1000;
 export const guards = [
-  new Guard(1, new Date(new Date().getTime() - oneDayInMiliseconds)),
-  new Guard(2, new Date(new Date().getTime() + oneDayInMiliseconds)),
-  new Guard(3, new Date(new Date().getTime() + oneDayInMiliseconds * 2)),
-  new Guard(4, new Date(new Date().getTime() + oneDayInMiliseconds * 3)),
-  new Guard(5, new Date(new Date().getTime() + oneDayInMiliseconds * 4)),
-  new Guard(6, new Date(new Date().getTime() + oneDayInMiliseconds * 5)),
-  new Guard(7, new Date(new Date().getTime() + oneDayInMiliseconds * 6)),
+  new Guard(1, new Date(new Date().getTime() + oneDayInMiliseconds)),
+  new Guard(2, new Date(new Date().getTime() + oneDayInMiliseconds * 2)),
+  new Guard(3, new Date(new Date().getTime() + oneDayInMiliseconds * 3)),
+  new Guard(4, new Date(new Date().getTime() + oneDayInMiliseconds * 4)),
+  new Guard(5, new Date(new Date().getTime() + oneDayInMiliseconds * 5)),
+  new Guard(6, new Date(new Date().getTime() + oneDayInMiliseconds * 6)),
+  new Guard(7, new Date(new Date().getTime() + oneDayInMiliseconds * 7)),
 ];
 
 //ASSIGNATIONS
