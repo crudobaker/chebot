@@ -47,8 +47,8 @@ export default class Repository {
     return guard;
   }
 
-  createUser(telegramId, firstName, lastName, userName) {
-    const user = new User(telegramId, firstName, lastName, userName);
+  createUser(telegramId, firstName, lastName, userName, userRole) {
+    const user = new User(telegramId, firstName, lastName, userName, userRole);
     this.saveUser(user);
     return user;
   }

@@ -6,12 +6,13 @@ export default class GuardsAgenda {
   // ################################################################################
   // CREATIONS
   // ################################################################################
-  createUser(telegramId, firstName, lastName, userName) {
+  createUser(telegramId, firstName, lastName, userName, userRole) {
     return this.repository.createUser(
       telegramId,
       firstName,
       lastName,
-      userName
+      userName,
+      userRole
     );
   }
 

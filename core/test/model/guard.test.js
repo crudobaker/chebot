@@ -1,9 +1,15 @@
 import Guard from "../../src/model/guard.js";
-import User from "../../src/model/user.js";
+import User, { PHYSIOTHERAPIST_ROLE }  from "../../src/model/user.js";
 
-const user1 = new User(1, "John", "Doe", "john_doe");
-const user2 = new User(2, "Jane", "Doe", "jane_doe");
-const user3 = new User(3, "Ricky", "James", "ricky_james");
+const user1 = new User(1, "John", "Doe", "john_doe", PHYSIOTHERAPIST_ROLE);
+const user2 = new User(1, "Jane", "Doe", "jane_doe", PHYSIOTHERAPIST_ROLE);
+const user3 = new User(
+  3,
+  "Ricky",
+  "James",
+  "ricky_james",
+  PHYSIOTHERAPIST_ROLE
+);
 const yesterday = new Date(new Date().getTime() - 1000 * 60 * 60 * 24);
 const tomorrow = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);
 

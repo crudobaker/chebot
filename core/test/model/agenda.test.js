@@ -1,13 +1,14 @@
 import GuardsAgenda from "../../src/model/agenda.js";
 import Repository from "../../src/repository.js";
+import { PHYSIOTHERAPIST_ROLE } from "../../src/model/user.js";
 
-const yesterday = new Date(new Date().getTime() - 1000 * 60 * 60 * 24);
 const tomorrow = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);
 
 const userId = "1";
 const firstName = "John";
 const lastName = "Doe";
 const userName = "john_doe";
+const userRole = PHYSIOTHERAPIST_ROLE;
 
 describe("Agenda Test", () => {
   let agenda, repository;
@@ -27,19 +28,20 @@ describe("Agenda Test", () => {
 
   test("create a user", () => {
     //act
-    const user = agenda.createUser(userId, firstName, lastName, userName);
+    const user = agenda.createUser(userId, firstName, lastName, userName, userRole);
 
     //assert
     expect(user.id).toBe(userId);
     expect(user.firstName).toBe(firstName);
     expect(user.lastName).toBe(lastName);
     expect(user.userName).toBe(userName);
+    expect(user.role).toBe(userRole);
     expect(agenda.findUserById(userId)).toStrictEqual(user);
   });
 
   test("gets the existing list of users", () => {
     //act
-    const user = agenda.createUser(userId, firstName, lastName, userName);
+    const user = agenda.createUser(userId, firstName, lastName, userName, userRole);
 
     //act
     const users = agenda.getAllUsers();

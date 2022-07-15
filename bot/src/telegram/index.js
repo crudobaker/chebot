@@ -15,8 +15,8 @@ bot.help((ctx) => {
 
 bot.command("hola", (ctx) => {
   const user = agenda.findUserById(String(ctx.update.message.from.id));
-
-  ctx.reply(`Hola ${user.firstName} 👋. Soy JuanBot 🤖. ¿Qué deseas hacer?`, {
+  const message = `Hola ${user.firstName} 👋. Soy JuanBot 🤖. ¿Qué deseas hacer?`;
+  const userOptions = {
     reply_markup: {
       inline_keyboard: [
         [
@@ -35,7 +35,30 @@ bot.command("hola", (ctx) => {
         ],
       ],
     },
-  });
+  };
+
+  const userOptionsNoCoordinator = {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          newActionButton(
+            "Mi Próxima Guardia ⏰",
+            createCallbackQuery("getNextAssignedGuardForUser", user.id)
+          ),
+          newActionButton(
+            "Mis Guardias 🗓️",
+            createCallbackQuery("getAllNextAssignedGuardsForUser", user.id)
+          ),
+        ],
+      ],
+    },
+  };
+
+  if (user.isCoordinator()) {
+    ctx.reply(message, userOptions);
+  } else {
+    ctx.reply(message, userOptionsNoCoordinator);
+  }
 });
 
 bot.action("getLoadedGuards", (ctx) => {
@@ -164,7 +187,7 @@ bot.action(new RegExp("assignGuardToUser"), (ctx) => {
     );
   } catch (error) {
     console.error(error);
-    ctx.reply(`❗${error.message}.`);
+    ctx.reply(`❗${error.message}`);
   }
 });
 
