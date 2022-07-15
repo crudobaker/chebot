@@ -1,6 +1,5 @@
 import Guard from "../src/guard.js";
 import Physiotherapist from "../src/physiotherapist.js";
-import { validRoles } from "../src/user.js";
 import User, { COORDINATOR_ROLE, PHYSIOTHERAPIST_ROLE } from "../src/user.js";
 
 const user1 = new User(1, "John", "Doe", "john_doe", PHYSIOTHERAPIST_ROLE);
