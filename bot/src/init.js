@@ -1,4 +1,4 @@
-import Repository from "core/src/repository.js";
+import Repository from "core/src/data-source/repository";
 import GuardsAgenda from "core/src/model/agenda.js";
 import { PHYSIOTHERAPIST_ROLE, COORDINATOR_ROLE } from "core/src/model/user.js";
 

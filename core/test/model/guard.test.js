@@ -1,4 +1,8 @@
-import Guard from "../../src/model/guard.js";
+import Guard, {
+  GUARD_ALREADY_HAPPEND,
+  GUARD_ALREADY_ASSIGNED_TO_USER,
+  GUARD_ALREADY_COVERED,
+} from "../../src/model/guard.js";
 import User, { PHYSIOTHERAPIST_ROLE } from "../../src/model/user.js";
 
 const user1 = new User("1", "John", "Doe", "john_doe", PHYSIOTHERAPIST_ROLE);
@@ -34,7 +38,7 @@ describe("Guard Test", () => {
 
     //assert
     expect(() => newGuard.assignTo(user1)).toThrow(
-      new Error("La guardia ya se encuentra asignada al usuario.")
+      new Error(GUARD_ALREADY_ASSIGNED_TO_USER)
     );
     expect(newGuard.amountOfAssignations()).toEqual(1);
     expect(newGuard.isAssignedTo(user1).toBeTruthy);
@@ -125,7 +129,7 @@ describe("Guard Test", () => {
 
     //assert
     expect(() => newGuard.assignTo(user1)).toThrow(
-      new Error("La guardia ya pasó.")
+      new Error(GUARD_ALREADY_HAPPEND)
     );
     expect(newGuard.amountOfAssignations()).toEqual(0);
     expect(newGuard.isAssignedTo(user1)).toBeFalsy();
@@ -136,7 +140,7 @@ describe("Guard Test", () => {
     const newGuard = new Guard(1, tomorrow);
 
     //assert
-    expect(newGuard.isCover()).toBeFalsy();
+    expect(newGuard.isCovered()).toBeFalsy();
   });
 
   test("a guard with two assigments is covered", () => {
@@ -146,7 +150,7 @@ describe("Guard Test", () => {
     newGuard.assignTo(user2);
 
     //assert
-    expect(newGuard.isCover()).toBeTruthy();
+    expect(newGuard.isCovered()).toBeTruthy();
   });
 
   test("is not possible to assign more than two users to a guard", () => {
@@ -157,7 +161,7 @@ describe("Guard Test", () => {
 
     //assert
     expect(() => newGuard.assignTo(user3)).toThrow(
-      new Error("La guardia ya se encuentra cubierta.")
+      new Error(GUARD_ALREADY_COVERED)
     );
   });
 });

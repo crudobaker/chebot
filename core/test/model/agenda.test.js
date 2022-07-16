@@ -1,17 +1,22 @@
-import GuardsAgenda from "../../src/model/agenda.js";
-import Repository from "../../src/repository.js";
+import GuardsAgenda, {
+  GUARD_NOT_FOUND,
+  NEXT_GUARD_NOT_FOUND,
+  USER_NOT_FOUND,
+} from "../../src/model/agenda.js";
+import Repository from "../../src/data-source/repository.js";
 import { PHYSIOTHERAPIST_ROLE } from "../../src/model/user.js";
 
 const oneDayInMiliseconds = 60 * 60 * 24 * 1000;
-const tomorrow = new Date(new Date().getTime() + oneDayInMiliseconds);
 const moreDays = (amountOfDays) =>
   new Date(new Date().getTime() + oneDayInMiliseconds * amountOfDays);
+const yesterday = moreDays(-1);
+const tomorrow = moreDays(1);
 
 describe("Agenda Test", () => {
-  let agenda, repository;
+  let agenda;
 
   beforeEach(() => {
-    repository = new Repository();
+    const repository = new Repository();
     agenda = new GuardsAgenda(repository);
   });
 
@@ -65,6 +70,14 @@ describe("Agenda Test", () => {
       //assert
       expect(users.length).toBe(1);
       expect(users.includes(user)).toBeTruthy();
+    });
+
+    test("error when user does not exists", () => {
+      //act
+      const getUserThatNotExists = () => agenda.findUserById("1");
+
+      //assert
+      expect(getUserThatNotExists).toThrow(new Error(USER_NOT_FOUND));
     });
   });
 
@@ -155,6 +168,14 @@ describe("Agenda Test", () => {
     test("delete a past guard", () => {
       //TODO
     });
+
+    test("error when guard does not exists", () => {
+      //act
+      const geGuardThatNotExists = () => agenda.findGuardById("1");
+
+      //assert
+      expect(geGuardThatNotExists).toThrow(new Error(GUARD_NOT_FOUND));
+    });
   });
 
   describe("Assignations", () => {
@@ -209,10 +230,25 @@ describe("Agenda Test", () => {
       agenda.assignGuardToUser(otherGuard.id, user1.id);
 
       //action
-      const { guard: nextGuardForUser } = agenda.getNextGuardForUser(user1.id);
+      const nextGuardForUser = agenda.getNextGuardForUser(user1);
 
       //assert
       expect(nextGuardForUser).toStrictEqual(nextGuard);
+    });
+
+    test("next guard for a particular user not found", () => {
+      //arrange
+      agenda.createGuard(tomorrow);
+      agenda.createGuard(moreDays(2));
+      const nextGuard = agenda.createGuard(moreDays(3));
+      agenda.createGuard(moreDays(4));
+      agenda.assignGuardToUser(nextGuard.id, user2.id);
+
+      //action
+      const nextGuardForUser = () => agenda.getNextGuardForUser(user1);
+
+      //assert
+      expect(nextGuardForUser).toThrow(new Error(NEXT_GUARD_NOT_FOUND));
     });
 
     test("gets all the next guards for a particular user", () => {
@@ -226,9 +262,7 @@ describe("Agenda Test", () => {
       );
 
       //action
-      const { guards: nextGuardsForUser } = agenda.getAllNextGuardsForUser(
-        user1.id
-      );
+      const nextGuardsForUser = agenda.getAllNextGuardsForUser(user1);
 
       //assert
       expect(nextGuardsForUser.length).toBe(3);
@@ -237,8 +271,26 @@ describe("Agenda Test", () => {
       expect(nextGuardsForUser.includes(lastGuard)).toBeTruthy();
     });
 
+    test("gets an empty list when a particular user has not next guards", () => {
+      ///arrange
+      const nextGuard = agenda.createGuard(tomorrow);
+      const otherGuard = agenda.createGuard(moreDays(2));
+      agenda.createGuard(moreDays(3));
+      const lastGuard = agenda.createGuard(moreDays(4));
+      [nextGuard, otherGuard, lastGuard].forEach((guard) =>
+        agenda.assignGuardToUser(guard.id, user1.id)
+      );
+
+      //action
+      const nextGuardsForUser = agenda.getAllNextGuardsForUser(user2);
+
+      //assert
+      expect(nextGuardsForUser.length).toBe(0);
+    });
+
     test("gets not covered guards", () => {
       //arrange
+      agenda.createGuard(yesterday);
       const coveredGuard = agenda.createGuard(moreDays(2));
       const assignedButNotCoveredGuard = agenda.createGuard(moreDays(4));
       const notAssignedGuard = agenda.createGuard(moreDays(3));

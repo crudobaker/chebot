@@ -1,3 +1,7 @@
+export const GUARD_NOT_FOUND = "guard.not.found";
+export const NEXT_GUARD_NOT_FOUND = "next.guard.not.found";
+export const USER_NOT_FOUND = "user.not.found";
+
 export default class GuardsAgenda {
   constructor(repository) {
     this.repository = repository;
@@ -33,14 +37,14 @@ export default class GuardsAgenda {
 
   findGuardById(guardId) {
     const guard = this.repository.findGuardById(guardId);
-    if (!guard) throw new Error("Guardia no encontrada.");
+    if (!guard) throw new Error(GUARD_NOT_FOUND);
 
     return guard;
   }
 
   findUserById(userId) {
     const user = this.repository.findUserById(userId);
-    if (!user) throw new Error("Usuario no encontrado.");
+    if (!user) throw new Error(USER_NOT_FOUND);
 
     return user;
   }
@@ -48,34 +52,28 @@ export default class GuardsAgenda {
   // ################################################################################
   // BUSINESS
   // ################################################################################
-  getNextGuardForUser(userId) {
-    const { user, guards } = this.getAllNextGuardsForUser(userId);
+  getNextGuardForUser(user) {
+    const guards = this.getAllNextGuardsForUser(user);
 
     if (guards.length === 0) {
-      throw new Error("Next guard not found.");
+      throw new Error(NEXT_GUARD_NOT_FOUND);
     }
 
-    return {
-      user,
-      guard: guards[0],
-    };
+    return guards[0];
   }
 
-  getAllNextGuardsForUser(userId) {
-    const user = this.repository.findUserById(userId);
-
+  getAllNextGuardsForUser(user) {
     const nextGuards = this.repository.findGuardsBy(
       (guard) => guard.isAssignedTo(user) && !guard.alreadyHappened()
     );
 
-    return {
-      user,
-      guards: nextGuards,
-    };
+    return nextGuards;
   }
 
   getNotCoveredGuards() {
-    return this.repository.findGuardsBy((guard) => !guard.isCover());
+    return this.repository.findGuardsBy(
+      (guard) => !guard.isCovered() && !guard.alreadyHappened()
+    );
   }
 
   getGuardAssignations(guardId) {
