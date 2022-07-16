@@ -48,60 +48,50 @@ export default class GuardsAgenda {
   // ################################################################################
   // BUSINESS
   // ################################################################################
-  getNextAssignationForUser(userId) {
-    const user = this.findUserById(userId);
+  getNextGuardForUser(userId) {
+    const { user, guards } = this.getAllNextGuardsForUser(userId);
 
-    const nextGuards = this.repository.findGuardsBy(
-      (guard) => guard.isAssignedTo(user) && !guard.alreadyHappened()
-    );
-    if (!nextGuards.length > 0) {
-      throw new Error("No tiene próximas guardias asignadas.");
+    if (guards.length === 0) {
+      throw new Error("Next guard not found.");
     }
-
-    const nextGuard = nextGuards[0];
 
     return {
       user,
-      assignation: nextGuard.getAssignationForUser(user),
+      guard: guards[0],
     };
   }
 
-  getAllNextAssignationForUser(userId) {
+  getAllNextGuardsForUser(userId) {
     const user = this.repository.findUserById(userId);
 
     const nextGuards = this.repository.findGuardsBy(
       (guard) => guard.isAssignedTo(user) && !guard.alreadyHappened()
     );
 
-    if (nextGuards.length === 0) {
-      throw new Error("No tiene próximas guardias asignadas.");
-    }
-
     return {
       user,
-      assignations: nextGuards.map((guard) =>
-        guard.getAssignationForUser(user)
-      ),
+      guards: nextGuards,
     };
   }
 
-  getNotAssignedGuards() {
-    return this.repository.findGuardsBy((guard) => !guard.isAssigned());
+  getNotCoveredGuards() {
+    return this.repository.findGuardsBy((guard) => !guard.isCover());
   }
 
   getGuardAssignations(guardId) {
     const guard = this.findGuardById(guardId);
-    return { guard, assignations: guard.getAssignations() };
+    return { guard, users: guard.getAssignations() };
   }
 
   deleteGuard(guardId) {
-    return this.repository.removeGuardById(guardId);
+    const guard = this.findGuardById(guardId);
+    return this.repository.removeGuard(guard);
   }
 
   assignGuardToUser(guardId, userId) {
     const guard = this.findGuardById(guardId);
     const user = this.findUserById(userId);
-    const assignation = guard.assignTo(user);
-    return { guard, assignation };
+    guard.assignTo(user);
+    return { guard, user };
   }
 }

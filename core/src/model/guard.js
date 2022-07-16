@@ -1,5 +1,4 @@
 import { format } from "date-fns";
-import Assignation from "core/src/model/assignation.js";
 
 const AMOUNT_OF_ASSIGNATIONS_TO_BE_COVERED = 2;
 
@@ -8,6 +7,14 @@ export default class Guard {
     this.id = id;
     this.date = date;
     this.assignations = [];
+  }
+
+  getDate() {
+    return this.date;
+  }
+
+  getAssignations() {
+    return this.assignations;
   }
 
   assignTo(user) {
@@ -23,24 +30,16 @@ export default class Guard {
       throw new Error("La guardia ya se encuentra cubierta.");
     }
 
-    const newAssignation = new Assignation(this, user);
-    this.assignations.push(newAssignation);
-
-    return newAssignation;
+    this.assignations.push(user);
   }
 
   isAssignedTo(user) {
-    return this.assignations.some((assignation) =>
-      assignation.isAssignedTo(user)
-    );
+    return this.assignations.includes(user);
   }
 
+  //TODO: need to extract it into the bot
   dateInfo() {
     return format(this.date, "dd/MM/yyyy");
-  }
-
-  getDate() {
-    return this.date;
   }
 
   alreadyHappened() {
@@ -52,21 +51,8 @@ export default class Guard {
     return this.assignations.length;
   }
 
-  getAssignations() {
-    return this.assignations;
-  }
-
   isAssigned() {
     return this.assignations.length > 0;
-  }
-
-  getAssignationForUser(user) {
-    if (this.isAssignedTo(user)) {
-      return this.assignations.find((assignation) =>
-        assignation.isAssignedTo(user)
-      );
-    }
-    throw new Error("La guardia no se encuentra asignada al usuario.");
   }
 
   isCover() {

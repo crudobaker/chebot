@@ -1,10 +1,10 @@
 import Guard from "../../src/model/guard.js";
-import User, { PHYSIOTHERAPIST_ROLE }  from "../../src/model/user.js";
+import User, { PHYSIOTHERAPIST_ROLE } from "../../src/model/user.js";
 
-const user1 = new User(1, "John", "Doe", "john_doe", PHYSIOTHERAPIST_ROLE);
-const user2 = new User(1, "Jane", "Doe", "jane_doe", PHYSIOTHERAPIST_ROLE);
+const user1 = new User("1", "John", "Doe", "john_doe", PHYSIOTHERAPIST_ROLE);
+const user2 = new User("2", "Jane", "Doe", "jane_doe", PHYSIOTHERAPIST_ROLE);
 const user3 = new User(
-  3,
+  "3",
   "Ricky",
   "James",
   "ricky_james",
@@ -70,12 +70,11 @@ describe("Guard Test", () => {
     const newGuard = new Guard(1, tomorrow);
 
     //act
-    const newAssignation = newGuard.assignTo(user1);
+    newGuard.assignTo(user1);
 
     //assert
     expect(newGuard.isAssigned()).toBeTruthy();
-    expect(newAssignation.isAssignedTo(user1));
-    expect(newAssignation.isForGuard(newGuard));
+    expect(newGuard.isAssignedTo(user1));
   });
 
   test("a new guard has not got assignations", () => {
@@ -83,7 +82,7 @@ describe("Guard Test", () => {
     const newGuard = new Guard(1, new Date());
 
     //assert
-    expect(newGuard.getAssignations().length).toEqual(0);
+    expect(newGuard.amountOfAssignations()).toEqual(0);
   });
 
   test("after assign a user to a guard, it has an assignation", () => {
@@ -92,12 +91,10 @@ describe("Guard Test", () => {
 
     //act
     newGuard.assignTo(user1);
-    const assignations = newGuard.getAssignations();
 
     //assert
-    expect(assignations.length).toEqual(1);
-    expect(assignations[0].isForGuard(newGuard)).toBeTruthy();
-    expect(assignations[0].isAssignedTo(user1)).toBeTruthy();
+    expect(newGuard.amountOfAssignations()).toEqual(1);
+    expect(newGuard.isAssignedTo(user1)).toBeTruthy();
   });
 
   test("a past guard has already happend", () => {
@@ -161,35 +158,6 @@ describe("Guard Test", () => {
     //assert
     expect(() => newGuard.assignTo(user3)).toThrow(
       new Error("La guardia ya se encuentra cubierta.")
-    );
-  });
-
-  test("gets only the assignations for each user of the guard", () => {
-    //arrange
-    const newGuard = new Guard(1, tomorrow);
-    newGuard.assignTo(user1);
-    newGuard.assignTo(user2);
-
-    //act
-    const assignationForUser1 = newGuard.getAssignationForUser(user1);
-    const assignationForUser2 = newGuard.getAssignationForUser(user2);
-
-    //assert
-    expect(assignationForUser1.isAssignedTo(user1)).toBeTruthy();
-    expect(assignationForUser1.isForGuard(newGuard)).toBeTruthy();
-    expect(assignationForUser2.isAssignedTo(user2)).toBeTruthy();
-    expect(assignationForUser2.isForGuard(newGuard)).toBeTruthy();
-  });
-
-  test("gets an error when there is not an assignation for some user", () => {
-    //arrange
-    const newGuard = new Guard(1, tomorrow);
-    newGuard.assignTo(user1);
-    newGuard.assignTo(user2);
-
-    //assert
-    expect(() => newGuard.getAssignationForUser(user3)).toThrow(
-      new Error("La guardia no se encuentra asignada al usuario.")
     );
   });
 });
