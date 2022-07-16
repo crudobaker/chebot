@@ -15,7 +15,7 @@ describe("User Test", () => {
 
   test("a user with coordinator role is a coordinator", () => {
     const user = new User(
-      5159780344,
+      "5159780344",
       "Pablo",
       "Tocalini",
       "pablo",
@@ -27,7 +27,7 @@ describe("User Test", () => {
 
   test("a user with invalid role to crash everything", () => {
     expect(
-      () => new User(5159780344, "Pablo", "Tocalini", "pablo", "caca")
+      () => new User("5159780344", "Pablo", "Tocalini", "pablo", "caca")
     ).toThrow(
       new Error("Invalid role")
     );

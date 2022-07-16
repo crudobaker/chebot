@@ -33,10 +33,9 @@ export default class Repository {
       );
   }
 
-  removeGuardById(guardId) {
-    const guard = this.findGuardById(guardId);
+  removeGuard(guard) {
     const guardIndex = this.guards.indexOf(guard);
-    guards.splice(guardIndex, 1);
+    this.guards.splice(guardIndex, 1);
     return guard;
   }
 
