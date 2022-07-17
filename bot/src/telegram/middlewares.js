@@ -1,4 +1,4 @@
-import agenda from "core/src/index.js";
+import agenda from "../init.js";
 
 export const addRepliesMessages = (ctx, next) => {
   ctx.error = (message) => ctx.reply(`❗${message}`);

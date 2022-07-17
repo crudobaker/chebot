@@ -1,7 +1,15 @@
 import { Telegraf } from "telegraf";
 import { addRepliesMessages, errorHandling, addUser } from "./middlewares.js";
 import agenda from "../init.js";
-
+import {
+  GUARD_NOT_FOUND,
+  NEXT_GUARD_NOT_FOUND,
+} from "core/src/model/agenda.js";
+import {
+  GUARD_ALREADY_HAPPEND,
+  GUARD_ALREADY_ASSIGNED_TO_USER,
+  GUARD_ALREADY_COVERED,
+} from "core/src/model/guard.js";
 const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);
 
@@ -12,9 +20,9 @@ const bot = new Telegraf(token);
 bot.use(addRepliesMessages, errorHandling, addUser);
 
 bot.help((ctx) => {
-  ctx.reply(
-    "Estas son mis acciones disponibles: \n\n/hola: Nos saludamos y te ofrezco las diferentes acciones para que comencemos a interactuar."
-  );
+  const { user } = ctx.state;
+  const message = `Hola ${user.firstName} 👋. Soy JuanBot 🤖.\n\nEstas son mis acciones disponibles:\n/hola: Nos saludamos y te ofrezco las diferentes acciones para que comencemos a interactuar.`;
+  ctx.reply(message);
 });
 
 bot.command("hola", (ctx) => {
@@ -108,20 +116,27 @@ bot.action(new RegExp("getGuardInformation"), (ctx) => {
       ctx.info(`La guardia ${guard.dateInfo()} no tiene asignaciones.`);
     }
   } catch (error) {
-    ctx.error(error.message);
+    if (error.message === GUARD_NOT_FOUND) {
+      ctx.warning(`Guardia no encontrada.`);
+    } else {
+      ctx.error("Error al recuperar la guardia.");
+    }
   }
 });
 
 bot.action(new RegExp("getNextGuardForUser"), (ctx) => {
+  const { user } = ctx.state;
   try {
-    const { user } = ctx.state;
     const guard = agenda.getNextGuardForUser(user);
-    ctx.info(`${user.info()}, su próxima asignación es el ${guard.dateInfo()}`);
+    ctx.info(
+      `${user.info()}, su próxima asignación es el ${guard.dateInfo()}.`
+    );
   } catch (error) {
-    if (error.message === "Next guard not found.") {
-      ctx.warning(`${user.info()} no tiene una próxima guardia asignada.`);
+    if (error.message === NEXT_GUARD_NOT_FOUND) {
+      ctx.warning(`${user.info()}, no tiene una próxima guardia asignada.`);
+    } else {
+      ctx.error("Error al recuperar la guardia.");
     }
-    ctx.error("Error al recuperar la guardia.");
   }
 });
 
@@ -132,9 +147,10 @@ bot.action(new RegExp("getAllNextGuardsForUser"), (ctx) => {
 
     if (guards.length === 0) {
       ctx.warning(`${user.info()} no tiene guardias asignadas.`);
+    } else {
+      const guardsInfo = guards.map((guard) => guard.dateInfo()).join("\n");
+      ctx.info(`${user.info()}, sus guardias asignadas son:\n${guardsInfo}`);
     }
-    const guardsInfo = guards.map((guard) => guard.dateInfo()).join("\n");
-    ctx.info(`${user.info()}, sus guardias asignadas son:\n${guardsInfo}`);
   } catch (error) {
     ctx.error("Error al recuperar las guardias.");
   }
@@ -177,7 +193,19 @@ bot.action(new RegExp("assignGuardToUser"), (ctx) => {
       `La guardia ${guard.dateInfo()} fue asignada existosamente a ${user.info()}.`
     );
   } catch (error) {
-    ctx.error(`${error.message}`);
+    switch (error.message) {
+      case GUARD_ALREADY_HAPPEND:
+        ctx.warning("La guardia ya ocurrió.");
+        break;
+      case GUARD_ALREADY_ASSIGNED_TO_USER:
+        ctx.warning("La guardia ya se encuentra asignada al usuario.");
+        break;
+      case GUARD_ALREADY_COVERED:
+        ctx.warning("La guardia ya está cubierta.");
+        break;
+      default:
+        throw error;
+    }
   }
 });
 

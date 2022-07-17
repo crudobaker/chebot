@@ -2,8 +2,9 @@ import Guard, {
   GUARD_ALREADY_HAPPEND,
   GUARD_ALREADY_ASSIGNED_TO_USER,
   GUARD_ALREADY_COVERED,
-} from "../../src/model/guard.js";
-import User, { PHYSIOTHERAPIST_ROLE } from "../../src/model/user.js";
+} from "core/src/model/guard.js";
+import User, { PHYSIOTHERAPIST_ROLE } from "core/src/model/user.js";
+import { YESTERDAY, TOMORROW } from "core/src/date-utils.js";
 
 const user1 = new User("1", "John", "Doe", "john_doe", PHYSIOTHERAPIST_ROLE);
 const user2 = new User("2", "Jane", "Doe", "jane_doe", PHYSIOTHERAPIST_ROLE);
@@ -14,13 +15,11 @@ const user3 = new User(
   "ricky_james",
   PHYSIOTHERAPIST_ROLE
 );
-const yesterday = new Date(new Date().getTime() - 1000 * 60 * 60 * 24);
-const tomorrow = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);
 
 describe("Guard Test", () => {
   test("assign a user to a guard", () => {
     //arrange
-    const newGuard = new Guard(1, tomorrow);
+    const newGuard = new Guard(1, TOMORROW);
 
     //act
     newGuard.assignTo(user1);
@@ -31,7 +30,7 @@ describe("Guard Test", () => {
 
   test("is not possible to assign twice a user to a guard ", () => {
     //arrange
-    const newGuard = new Guard(1, tomorrow);
+    const newGuard = new Guard(1, TOMORROW);
 
     //act
     newGuard.assignTo(user1);
@@ -46,7 +45,7 @@ describe("Guard Test", () => {
 
   test("is possible to assign different users to a guard ", () => {
     //arrange
-    const newGuard = new Guard(1, tomorrow);
+    const newGuard = new Guard(1, TOMORROW);
 
     //act
     newGuard.assignTo(user1);
@@ -60,7 +59,7 @@ describe("Guard Test", () => {
 
   test("a new guard is not assigned", () => {
     //arrange
-    const newGuard = new Guard(1, tomorrow);
+    const newGuard = new Guard(1, TOMORROW);
 
     //act
     const isGuardAssigned = newGuard.isAssigned();
@@ -71,7 +70,7 @@ describe("Guard Test", () => {
 
   test("after assign a user to a guard, it is assigned", () => {
     //arrange
-    const newGuard = new Guard(1, tomorrow);
+    const newGuard = new Guard(1, TOMORROW);
 
     //act
     newGuard.assignTo(user1);
@@ -91,7 +90,7 @@ describe("Guard Test", () => {
 
   test("after assign a user to a guard, it has an assignation", () => {
     //arrange
-    const newGuard = new Guard(1, tomorrow);
+    const newGuard = new Guard(1, TOMORROW);
 
     //act
     newGuard.assignTo(user1);
@@ -103,7 +102,7 @@ describe("Guard Test", () => {
 
   test("a past guard has already happend", () => {
     //arrange
-    const newGuard = new Guard(1, yesterday);
+    const newGuard = new Guard(1, YESTERDAY);
 
     //act
     const pastGuard = newGuard.alreadyHappened();
@@ -114,7 +113,7 @@ describe("Guard Test", () => {
 
   test("a future guard has not happend yet", () => {
     //arrange
-    const newGuard = new Guard(1, tomorrow);
+    const newGuard = new Guard(1, TOMORROW);
 
     //act
     const futureGuard = newGuard.alreadyHappened();
@@ -125,7 +124,7 @@ describe("Guard Test", () => {
 
   test("is not possible to assign an already happend guard", () => {
     //arrange
-    const newGuard = new Guard(1, yesterday);
+    const newGuard = new Guard(1, YESTERDAY);
 
     //assert
     expect(() => newGuard.assignTo(user1)).toThrow(
@@ -137,7 +136,7 @@ describe("Guard Test", () => {
 
   test("a guard without assigment is not covered", () => {
     //arrange
-    const newGuard = new Guard(1, tomorrow);
+    const newGuard = new Guard(1, TOMORROW);
 
     //assert
     expect(newGuard.isCovered()).toBeFalsy();
@@ -145,7 +144,7 @@ describe("Guard Test", () => {
 
   test("a guard with two assigments is covered", () => {
     //arrange
-    const newGuard = new Guard(1, tomorrow);
+    const newGuard = new Guard(1, TOMORROW);
     newGuard.assignTo(user1);
     newGuard.assignTo(user2);
 
@@ -155,7 +154,7 @@ describe("Guard Test", () => {
 
   test("is not possible to assign more than two users to a guard", () => {
     //arrange
-    const newGuard = new Guard(1, tomorrow);
+    const newGuard = new Guard(1, TOMORROW);
     newGuard.assignTo(user1);
     newGuard.assignTo(user2);
 

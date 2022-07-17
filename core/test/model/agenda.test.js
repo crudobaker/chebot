@@ -2,15 +2,10 @@ import GuardsAgenda, {
   GUARD_NOT_FOUND,
   NEXT_GUARD_NOT_FOUND,
   USER_NOT_FOUND,
-} from "../../src/model/agenda.js";
-import Repository from "../../src/data-source/repository.js";
-import { PHYSIOTHERAPIST_ROLE } from "../../src/model/user.js";
-
-const oneDayInMiliseconds = 60 * 60 * 24 * 1000;
-const moreDays = (amountOfDays) =>
-  new Date(new Date().getTime() + oneDayInMiliseconds * amountOfDays);
-const yesterday = moreDays(-1);
-const tomorrow = moreDays(1);
+} from "core/src/model/agenda.js";
+import Repository from "core/src/data-source/repository.js";
+import { PHYSIOTHERAPIST_ROLE } from "core/src/model/user.js";
+import { YESTERDAY, TOMORROW, moreDays } from "core/src/date-utils.js";
 
 describe("Agenda Test", () => {
   let agenda;
@@ -110,16 +105,16 @@ describe("Agenda Test", () => {
 
     test("create a guard", () => {
       //act
-      const guard = agenda.createGuard(tomorrow);
+      const guard = agenda.createGuard(TOMORROW);
 
       //assert
-      expect(guard.getDate()).toStrictEqual(tomorrow);
+      expect(guard.getDate()).toStrictEqual(TOMORROW);
       expect(agenda.findGuardById(guard.id)).toStrictEqual(guard);
     });
 
     test("gets the existing list of guards", () => {
       //arrange
-      const guard = agenda.createGuard(tomorrow);
+      const guard = agenda.createGuard(TOMORROW);
 
       //act
       const guards = agenda.getAllGuards();
@@ -131,7 +126,7 @@ describe("Agenda Test", () => {
 
     test("delete a not assigned guard", () => {
       //arrange
-      const guard = agenda.createGuard(tomorrow);
+      const guard = agenda.createGuard(TOMORROW);
 
       //act
       agenda.deleteGuard(guard.id);
@@ -142,7 +137,7 @@ describe("Agenda Test", () => {
 
     test("delete an assigned guard", () => {
       //arrange
-      const guard = agenda.createGuard(tomorrow);
+      const guard = agenda.createGuard(TOMORROW);
       agenda.assignGuardToUser(guard.id, user1.id);
 
       //act
@@ -154,7 +149,7 @@ describe("Agenda Test", () => {
 
     test("delete a covered guard", () => {
       //arrange
-      const guard = agenda.createGuard(tomorrow);
+      const guard = agenda.createGuard(TOMORROW);
       agenda.assignGuardToUser(guard.id, user1.id);
       agenda.assignGuardToUser(guard.id, user2.id);
 
@@ -222,7 +217,7 @@ describe("Agenda Test", () => {
 
     test("gets the next guard for a particular user", () => {
       //arrange
-      agenda.createGuard(tomorrow);
+      agenda.createGuard(TOMORROW);
       agenda.createGuard(moreDays(2));
       const nextGuard = agenda.createGuard(moreDays(3));
       const otherGuard = agenda.createGuard(moreDays(4));
@@ -238,7 +233,7 @@ describe("Agenda Test", () => {
 
     test("next guard for a particular user not found", () => {
       //arrange
-      agenda.createGuard(tomorrow);
+      agenda.createGuard(TOMORROW);
       agenda.createGuard(moreDays(2));
       const nextGuard = agenda.createGuard(moreDays(3));
       agenda.createGuard(moreDays(4));
@@ -253,7 +248,7 @@ describe("Agenda Test", () => {
 
     test("gets all the next guards for a particular user", () => {
       ///arrange
-      const nextGuard = agenda.createGuard(tomorrow);
+      const nextGuard = agenda.createGuard(TOMORROW);
       const otherGuard = agenda.createGuard(moreDays(2));
       agenda.createGuard(moreDays(3));
       const lastGuard = agenda.createGuard(moreDays(4));
@@ -273,7 +268,7 @@ describe("Agenda Test", () => {
 
     test("gets an empty list when a particular user has not next guards", () => {
       ///arrange
-      const nextGuard = agenda.createGuard(tomorrow);
+      const nextGuard = agenda.createGuard(TOMORROW);
       const otherGuard = agenda.createGuard(moreDays(2));
       agenda.createGuard(moreDays(3));
       const lastGuard = agenda.createGuard(moreDays(4));
@@ -290,7 +285,7 @@ describe("Agenda Test", () => {
 
     test("gets not covered guards", () => {
       //arrange
-      agenda.createGuard(yesterday);
+      agenda.createGuard(YESTERDAY);
       const coveredGuard = agenda.createGuard(moreDays(2));
       const assignedButNotCoveredGuard = agenda.createGuard(moreDays(4));
       const notAssignedGuard = agenda.createGuard(moreDays(3));
