@@ -1,4 +1,5 @@
 import agenda from "../init.js";
+import { DEFAULT_COMMANDS, COORDINATOR_COMMANDS } from "./commands/index.js";
 
 export const addRepliesMessages = (ctx, next) => {
   ctx.error = (message) => ctx.reply(`❗${message}`);
@@ -25,5 +26,19 @@ export const addUser = (ctx, next) => {
     return next();
   } catch (error) {
     ctx.error("Usuario inexistente.");
+  }
+};
+
+export const configureCommands = (ctx, next) => {
+  try {
+    const { user } = ctx.state;
+    if (user.isCoordinator()) {
+      ctx.telegram.setMyCommands(COORDINATOR_COMMANDS);
+    } else {
+      ctx.telegram.setMyCommands(DEFAULT_COMMANDS);
+    }
+    return next();
+  } catch (error) {
+    ctx.error("Error adding commands.");
   }
 };

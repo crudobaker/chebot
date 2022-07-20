@@ -1,15 +1,18 @@
 import { Telegraf } from "telegraf";
-import { addRepliesMessages, errorHandling, addUser } from "./middlewares.js";
-import agenda from "../init.js";
 import {
-  GUARD_NOT_FOUND,
-  NEXT_GUARD_NOT_FOUND,
-} from "core/src/model/agenda.js";
+  addRepliesMessages,
+  errorHandling,
+  addUser,
+  configureCommands,
+} from "./middlewares.js";
+import agenda from "../init.js";
+import { GUARD_NOT_FOUND } from "core/src/model/agenda.js";
 import {
   GUARD_ALREADY_HAPPEND,
   GUARD_ALREADY_ASSIGNED_TO_USER,
   GUARD_ALREADY_COVERED,
 } from "core/src/model/guard.js";
+import { newActionButton, newValueButton } from "./keyboard-utils.js";
 const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);
 
@@ -17,49 +20,23 @@ const bot = new Telegraf(token);
 // BOT CONFIGURATION
 //============================================================================
 // add middlewares
-bot.use(addRepliesMessages, errorHandling, addUser);
+bot.use(addRepliesMessages, errorHandling, addUser, configureCommands);
 
 bot.help((ctx) => {
   const { user } = ctx.state;
-  const message = `Hola ${user.firstName} 👋. Soy JuanBot 🤖.\n\nEstas son mis acciones disponibles:\n/hola: Nos saludamos y te ofrezco las diferentes acciones para que comencemos a interactuar.`;
-  ctx.reply(message);
+  ctx.reply(
+    `Hola ${user.firstName} 👋. Soy El Guardian 🤖.\n\n Presiona el botón menú para ver las opciones disponibles.`
+  );
 });
 
-bot.command("hola", (ctx) => {
-  const { user } = ctx.state;
-  const message = `Hola ${user.firstName} 👋. Soy JuanBot 🤖. ¿Qué deseas hacer?`;
-  const userOptions = {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          newActionButton("Guardias Cargadas 🗂️", "getLoadedGuards"),
-          newActionButton("Guardias no Cubiertas 📝", "getNotCoveredGuards"),
-        ],
-        [
-          newActionButton("Mi Próxima Guardia ⏰", "getNextGuardForUser"),
-          newActionButton("Mis Guardias 🗓️", "getAllNextGuardsForUser"),
-        ],
-      ],
-    },
-  };
+import { MY_GUARDS } from "./commands/my-guards-cmd.js";
+bot.command(MY_GUARDS.command, MY_GUARDS.execute);
 
-  const userOptionsNoCoordinator = {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          newActionButton("Mi Próxima Guardia ⏰", "getNextGuardForUser"),
-          newActionButton("Mis Guardias 🗓️", "getAllNextGuardsForUser"),
-        ],
-      ],
-    },
-  };
+import { MY_NEXT_GUARD } from "./commands/my-next-guard-cmd.js";
+bot.command(MY_NEXT_GUARD.command, MY_NEXT_GUARD.execute);
 
-  if (user.isCoordinator()) {
-    ctx.reply(message, userOptions);
-  } else {
-    ctx.reply(message, userOptionsNoCoordinator);
-  }
-});
+import { ADMIN_GUARDS } from "./commands/admin-guards-cmd.js";
+bot.command(ADMIN_GUARDS.command, ADMIN_GUARDS.execute);
 
 bot.action("getLoadedGuards", (ctx) => {
   const guards = agenda.getAllGuards();
@@ -121,38 +98,6 @@ bot.action(new RegExp("getGuardInformation"), (ctx) => {
     } else {
       ctx.error("Error al recuperar la guardia.");
     }
-  }
-});
-
-bot.action(new RegExp("getNextGuardForUser"), (ctx) => {
-  const { user } = ctx.state;
-  try {
-    const guard = agenda.getNextGuardForUser(user);
-    ctx.info(
-      `${user.info()}, su próxima asignación es el ${guard.dateInfo()}.`
-    );
-  } catch (error) {
-    if (error.message === NEXT_GUARD_NOT_FOUND) {
-      ctx.warning(`${user.info()}, no tiene una próxima guardia asignada.`);
-    } else {
-      ctx.error("Error al recuperar la guardia.");
-    }
-  }
-});
-
-bot.action(new RegExp("getAllNextGuardsForUser"), (ctx) => {
-  try {
-    const { user } = ctx.state;
-    const guards = agenda.getAllNextGuardsForUser(user);
-
-    if (guards.length === 0) {
-      ctx.warning(`${user.info()} no tiene guardias asignadas.`);
-    } else {
-      const guardsInfo = guards.map((guard) => guard.dateInfo()).join("\n");
-      ctx.info(`${user.info()}, sus guardias asignadas son:\n${guardsInfo}`);
-    }
-  } catch (error) {
-    ctx.error("Error al recuperar las guardias.");
   }
 });
 
@@ -235,27 +180,4 @@ function readCallbackQueryParams(ctx) {
  */
 function createCallbackQuery(actionName, ...params) {
   return `${actionName}?params=${params.join("|")}`;
-}
-
-/**
- * @param {string} text the button text
- * @param {string} action the button callback_query
- * @return {object} the structure of a Button with an action
- */
-function newActionButton(text, action) {
-  return {
-    text,
-    callback_data: action,
-  };
-}
-
-/**
- * @param {string} text the button tester text
- * @return {object} the structure of a button without an action associated
- */
-function newValueButton(text) {
-  return {
-    text,
-    callback_data: "x", //we need to pass something here
-  };
 }
