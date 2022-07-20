@@ -1,17 +1,17 @@
-import GuardsAgenda from "../../src/model/agenda.js";
-import Repository from "../../src/repository.js";
-import { PHYSIOTHERAPIST_ROLE } from "../../src/model/user.js";
-
-const oneDayInMiliseconds = 60 * 60 * 24 * 1000;
-const tomorrow = new Date(new Date().getTime() + oneDayInMiliseconds);
-const moreDays = (amountOfDays) =>
-  new Date(new Date().getTime() + oneDayInMiliseconds * amountOfDays);
+import GuardsAgenda, {
+  GUARD_NOT_FOUND,
+  NEXT_GUARD_NOT_FOUND,
+  USER_NOT_FOUND,
+} from "core/src/model/agenda.js";
+import Repository from "core/src/data-source/repository.js";
+import { PHYSIOTHERAPIST_ROLE } from "core/src/model/user.js";
+import { YESTERDAY, TOMORROW, moreDays } from "core/src/date-utils.js";
 
 describe("Agenda Test", () => {
-  let agenda, repository;
+  let agenda;
 
   beforeEach(() => {
-    repository = new Repository();
+    const repository = new Repository();
     agenda = new GuardsAgenda(repository);
   });
 
@@ -66,6 +66,14 @@ describe("Agenda Test", () => {
       expect(users.length).toBe(1);
       expect(users.includes(user)).toBeTruthy();
     });
+
+    test("error when user does not exists", () => {
+      //act
+      const getUserThatNotExists = () => agenda.findUserById("1");
+
+      //assert
+      expect(getUserThatNotExists).toThrow(new Error(USER_NOT_FOUND));
+    });
   });
 
   describe("Guards", () => {
@@ -97,16 +105,16 @@ describe("Agenda Test", () => {
 
     test("create a guard", () => {
       //act
-      const guard = agenda.createGuard(tomorrow);
+      const guard = agenda.createGuard(TOMORROW);
 
       //assert
-      expect(guard.getDate()).toStrictEqual(tomorrow);
+      expect(guard.getDate()).toStrictEqual(TOMORROW);
       expect(agenda.findGuardById(guard.id)).toStrictEqual(guard);
     });
 
     test("gets the existing list of guards", () => {
       //arrange
-      const guard = agenda.createGuard(tomorrow);
+      const guard = agenda.createGuard(TOMORROW);
 
       //act
       const guards = agenda.getAllGuards();
@@ -118,7 +126,7 @@ describe("Agenda Test", () => {
 
     test("delete a not assigned guard", () => {
       //arrange
-      const guard = agenda.createGuard(tomorrow);
+      const guard = agenda.createGuard(TOMORROW);
 
       //act
       agenda.deleteGuard(guard.id);
@@ -129,7 +137,7 @@ describe("Agenda Test", () => {
 
     test("delete an assigned guard", () => {
       //arrange
-      const guard = agenda.createGuard(tomorrow);
+      const guard = agenda.createGuard(TOMORROW);
       agenda.assignGuardToUser(guard.id, user1.id);
 
       //act
@@ -141,7 +149,7 @@ describe("Agenda Test", () => {
 
     test("delete a covered guard", () => {
       //arrange
-      const guard = agenda.createGuard(tomorrow);
+      const guard = agenda.createGuard(TOMORROW);
       agenda.assignGuardToUser(guard.id, user1.id);
       agenda.assignGuardToUser(guard.id, user2.id);
 
@@ -154,6 +162,14 @@ describe("Agenda Test", () => {
 
     test("delete a past guard", () => {
       //TODO
+    });
+
+    test("error when guard does not exists", () => {
+      //act
+      const geGuardThatNotExists = () => agenda.findGuardById("1");
+
+      //assert
+      expect(geGuardThatNotExists).toThrow(new Error(GUARD_NOT_FOUND));
     });
   });
 
@@ -201,7 +217,7 @@ describe("Agenda Test", () => {
 
     test("gets the next guard for a particular user", () => {
       //arrange
-      agenda.createGuard(tomorrow);
+      agenda.createGuard(TOMORROW);
       agenda.createGuard(moreDays(2));
       const nextGuard = agenda.createGuard(moreDays(3));
       const otherGuard = agenda.createGuard(moreDays(4));
@@ -209,15 +225,30 @@ describe("Agenda Test", () => {
       agenda.assignGuardToUser(otherGuard.id, user1.id);
 
       //action
-      const { guard: nextGuardForUser } = agenda.getNextGuardForUser(user1.id);
+      const nextGuardForUser = agenda.getNextGuardForUser(user1);
 
       //assert
       expect(nextGuardForUser).toStrictEqual(nextGuard);
     });
 
+    test("next guard for a particular user not found", () => {
+      //arrange
+      agenda.createGuard(TOMORROW);
+      agenda.createGuard(moreDays(2));
+      const nextGuard = agenda.createGuard(moreDays(3));
+      agenda.createGuard(moreDays(4));
+      agenda.assignGuardToUser(nextGuard.id, user2.id);
+
+      //action
+      const nextGuardForUser = () => agenda.getNextGuardForUser(user1);
+
+      //assert
+      expect(nextGuardForUser).toThrow(new Error(NEXT_GUARD_NOT_FOUND));
+    });
+
     test("gets all the next guards for a particular user", () => {
       ///arrange
-      const nextGuard = agenda.createGuard(tomorrow);
+      const nextGuard = agenda.createGuard(TOMORROW);
       const otherGuard = agenda.createGuard(moreDays(2));
       agenda.createGuard(moreDays(3));
       const lastGuard = agenda.createGuard(moreDays(4));
@@ -226,9 +257,7 @@ describe("Agenda Test", () => {
       );
 
       //action
-      const { guards: nextGuardsForUser } = agenda.getAllNextGuardsForUser(
-        user1.id
-      );
+      const nextGuardsForUser = agenda.getAllNextGuardsForUser(user1);
 
       //assert
       expect(nextGuardsForUser.length).toBe(3);
@@ -237,8 +266,26 @@ describe("Agenda Test", () => {
       expect(nextGuardsForUser.includes(lastGuard)).toBeTruthy();
     });
 
+    test("gets an empty list when a particular user has not next guards", () => {
+      ///arrange
+      const nextGuard = agenda.createGuard(TOMORROW);
+      const otherGuard = agenda.createGuard(moreDays(2));
+      agenda.createGuard(moreDays(3));
+      const lastGuard = agenda.createGuard(moreDays(4));
+      [nextGuard, otherGuard, lastGuard].forEach((guard) =>
+        agenda.assignGuardToUser(guard.id, user1.id)
+      );
+
+      //action
+      const nextGuardsForUser = agenda.getAllNextGuardsForUser(user2);
+
+      //assert
+      expect(nextGuardsForUser.length).toBe(0);
+    });
+
     test("gets not covered guards", () => {
       //arrange
+      agenda.createGuard(YESTERDAY);
       const coveredGuard = agenda.createGuard(moreDays(2));
       const assignedButNotCoveredGuard = agenda.createGuard(moreDays(4));
       const notAssignedGuard = agenda.createGuard(moreDays(3));

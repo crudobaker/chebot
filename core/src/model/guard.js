@@ -1,5 +1,9 @@
 import { format } from "date-fns";
 
+export const GUARD_ALREADY_HAPPEND = "guard.already.happend";
+export const GUARD_ALREADY_COVERED = "guard.already.covered";
+export const GUARD_ALREADY_ASSIGNED_TO_USER = "guard.already.assigned.to.user";
+
 const AMOUNT_OF_ASSIGNATIONS_TO_BE_COVERED = 2;
 
 export default class Guard {
@@ -19,15 +23,15 @@ export default class Guard {
 
   assignTo(user) {
     if (this.alreadyHappened()) {
-      throw new Error("La guardia ya pasó.");
+      throw new Error(GUARD_ALREADY_HAPPEND);
     }
 
     if (this.isAssignedTo(user)) {
-      throw new Error("La guardia ya se encuentra asignada al usuario.");
+      throw new Error(GUARD_ALREADY_ASSIGNED_TO_USER);
     }
 
-    if (this.isCover()) {
-      throw new Error("La guardia ya se encuentra cubierta.");
+    if (this.isCovered()) {
+      throw new Error(GUARD_ALREADY_COVERED);
     }
 
     this.assignations.push(user);
@@ -55,7 +59,7 @@ export default class Guard {
     return this.assignations.length > 0;
   }
 
-  isCover() {
+  isCovered() {
     return this.assignations.length === AMOUNT_OF_ASSIGNATIONS_TO_BE_COVERED;
   }
 }

@@ -1,4 +1,4 @@
-import IdManager from "core/src/id-manager.js";
+import IdManager from "core/src/data-source/id-manager.js";
 import Guard from "core/src/model/guard.js";
 import User from "core/src/model/user.js";
 

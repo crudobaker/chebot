@@ -1,20 +1,32 @@
 import { Telegraf } from "telegraf";
-import agenda from "core/src/index.js";
-
+import { addRepliesMessages, errorHandling, addUser } from "./middlewares.js";
+import agenda from "../init.js";
+import {
+  GUARD_NOT_FOUND,
+  NEXT_GUARD_NOT_FOUND,
+} from "core/src/model/agenda.js";
+import {
+  GUARD_ALREADY_HAPPEND,
+  GUARD_ALREADY_ASSIGNED_TO_USER,
+  GUARD_ALREADY_COVERED,
+} from "core/src/model/guard.js";
 const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);
 
 //============================================================================
 // BOT CONFIGURATION
 //============================================================================
+// add middlewares
+bot.use(addRepliesMessages, errorHandling, addUser);
+
 bot.help((ctx) => {
-  ctx.reply(
-    "Estas son mis acciones disponibles: \n\n/hola: Nos saludamos y te ofrezco las diferentes acciones para que comencemos a interactuar."
-  );
+  const { user } = ctx.state;
+  const message = `Hola ${user.firstName} 👋. Soy JuanBot 🤖.\n\nEstas son mis acciones disponibles:\n/hola: Nos saludamos y te ofrezco las diferentes acciones para que comencemos a interactuar.`;
+  ctx.reply(message);
 });
 
 bot.command("hola", (ctx) => {
-  const user = agenda.findUserById(String(ctx.update.message.from.id));
+  const { user } = ctx.state;
   const message = `Hola ${user.firstName} 👋. Soy JuanBot 🤖. ¿Qué deseas hacer?`;
   const userOptions = {
     reply_markup: {
@@ -24,14 +36,8 @@ bot.command("hola", (ctx) => {
           newActionButton("Guardias no Cubiertas 📝", "getNotCoveredGuards"),
         ],
         [
-          newActionButton(
-            "Mi Próxima Guardia ⏰",
-            createCallbackQuery("getNextGuardForUser", user.id)
-          ),
-          newActionButton(
-            "Mis Guardias 🗓️",
-            createCallbackQuery("getAllNextGuardsForUser", user.id)
-          ),
+          newActionButton("Mi Próxima Guardia ⏰", "getNextGuardForUser"),
+          newActionButton("Mis Guardias 🗓️", "getAllNextGuardsForUser"),
         ],
       ],
     },
@@ -41,14 +47,8 @@ bot.command("hola", (ctx) => {
     reply_markup: {
       inline_keyboard: [
         [
-          newActionButton(
-            "Mi Próxima Guardia ⏰",
-            createCallbackQuery("getNextGuardForUser", user.id)
-          ),
-          newActionButton(
-            "Mis Guardias 🗓️",
-            createCallbackQuery("getAllNextGuardsForUser", user.id)
-          ),
+          newActionButton("Mi Próxima Guardia ⏰", "getNextGuardForUser"),
+          newActionButton("Mis Guardias 🗓️", "getAllNextGuardsForUser"),
         ],
       ],
     },
@@ -77,16 +77,16 @@ bot.action("getLoadedGuards", (ctx) => {
       },
     });
   } else {
-    ctx.reply("No hay guardias cargadas");
+    ctx.info("No hay guardias cargadas");
   }
 });
 
 bot.action("getNotCoveredGuards", (ctx) => {
-  const notAssignedGuards = agenda.getNotCoveredGuards();
-  if (notAssignedGuards.length > 0) {
-    ctx.reply("Estos son los días de guardias no asignados", {
+  const notCoveredGuards = agenda.getNotCoveredGuards();
+  if (notCoveredGuards.length > 0) {
+    ctx.reply("Estos son las guardias no cubiertas", {
       reply_markup: {
-        inline_keyboard: notAssignedGuards.map((guard) => [
+        inline_keyboard: notCoveredGuards.map((guard) => [
           newValueButton(guard.dateInfo()),
           newActionButton(
             "Asignar ➕",
@@ -96,7 +96,7 @@ bot.action("getNotCoveredGuards", (ctx) => {
       },
     });
   } else {
-    ctx.reply("No hay guardias sin asignar");
+    ctx.info("No hay guardias sin asignar.");
   }
 });
 
@@ -113,41 +113,46 @@ bot.action(new RegExp("getGuardInformation"), (ctx) => {
         `Estas son las asignaciones de la guardia ${guard.dateInfo()}:\n${assignationsInformations}`
       );
     } else {
-      ctx.reply(`La guardia ${guard.dateInfo()} no tiene asignaciones.`);
+      ctx.info(`La guardia ${guard.dateInfo()} no tiene asignaciones.`);
     }
   } catch (error) {
-    ctx.reply(error.message);
+    if (error.message === GUARD_NOT_FOUND) {
+      ctx.warning(`Guardia no encontrada.`);
+    } else {
+      ctx.error("Error al recuperar la guardia.");
+    }
   }
 });
 
 bot.action(new RegExp("getNextGuardForUser"), (ctx) => {
+  const { user } = ctx.state;
   try {
-    const [userId] = readCallbackQueryParams(ctx);
-    const { user, guard } = agenda.getNextGuardForUser(userId);
-    ctx.reply(
-      `${user.info()}, su próxima asignación es el ${guard.dateInfo()}`
+    const guard = agenda.getNextGuardForUser(user);
+    ctx.info(
+      `${user.info()}, su próxima asignación es el ${guard.dateInfo()}.`
     );
   } catch (error) {
-    if (error.message === "Next guard not found.") {
-      // replayWarningMessage(ctx, )
-      ctx.reply(`⚠️ ${user.info()} no tiene una próxima guardia asignada.`);
+    if (error.message === NEXT_GUARD_NOT_FOUND) {
+      ctx.warning(`${user.info()}, no tiene una próxima guardia asignada.`);
+    } else {
+      ctx.error("Error al recuperar la guardia.");
     }
-    ctx.reply("❗Error al recuperar la guardia.");
   }
 });
 
 bot.action(new RegExp("getAllNextGuardsForUser"), (ctx) => {
   try {
-    const [userId] = readCallbackQueryParams(ctx);
-    const { user, guards } = agenda.getAllNextGuardsForUser(userId);
+    const { user } = ctx.state;
+    const guards = agenda.getAllNextGuardsForUser(user);
 
     if (guards.length === 0) {
-      ctx.reply(`⚠️ ${user.info()} no tiene guardias asignadas.`);
+      ctx.warning(`${user.info()} no tiene guardias asignadas.`);
+    } else {
+      const guardsInfo = guards.map((guard) => guard.dateInfo()).join("\n");
+      ctx.info(`${user.info()}, sus guardias asignadas son:\n${guardsInfo}`);
     }
-    const guardsInfo = guards.map((guard) => guard.dateInfo()).join("\n");
-    ctx.reply(`${user.info()}, sus guardias asignadas son:\n${guardsInfo}`);
   } catch (error) {
-    ctx.reply("❗Error al recuperar las guardias.");
+    ctx.error("Error al recuperar las guardias.");
   }
 });
 
@@ -155,11 +160,11 @@ bot.action(new RegExp("deleteGuard"), (ctx) => {
   try {
     const [guardId] = readCallbackQueryParams(ctx);
     const deletedGuard = agenda.deleteGuard(guardId);
-    ctx.reply(
-      `La guardia ${deletedGuard.dateInfo()} fue eliminada exitosamente! ✅`
+    ctx.success(
+      `La guardia ${deletedGuard.dateInfo()} fue eliminada exitosamente!`
     );
   } catch (error) {
-    ctx.reply("❗Error al eliminar la guardia.");
+    ctx.error("Error al eliminar la guardia.");
   }
 });
 
@@ -184,11 +189,23 @@ bot.action(new RegExp("assignGuardToUser"), (ctx) => {
   try {
     const [guardId, userId] = readCallbackQueryParams(ctx);
     const { guard, user } = agenda.assignGuardToUser(guardId, userId);
-    ctx.reply(
-      `✅ La guardia ${guard.dateInfo()} fue asignada existosamente a ${user.info()}`
+    ctx.success(
+      `La guardia ${guard.dateInfo()} fue asignada existosamente a ${user.info()}.`
     );
   } catch (error) {
-    ctx.reply(`❗${error.message}`);
+    switch (error.message) {
+      case GUARD_ALREADY_HAPPEND:
+        ctx.warning("La guardia ya ocurrió.");
+        break;
+      case GUARD_ALREADY_ASSIGNED_TO_USER:
+        ctx.warning("La guardia ya se encuentra asignada al usuario.");
+        break;
+      case GUARD_ALREADY_COVERED:
+        ctx.warning("La guardia ya está cubierta.");
+        break;
+      default:
+        throw error;
+    }
   }
 });
 
