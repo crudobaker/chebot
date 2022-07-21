@@ -1,6 +1,6 @@
 import { newActionButton } from "../keyboard-utils.js";
-import { GET_LOADED_GUARDS } from "../actions/get-loaded-guards-act.js";
-import { GET_NOT_COVERED_GUARDS } from "../actions/get-not-covered-guards-act.js";
+import { GET_LOADED_GUARDS } from "../actions/get-loaded-guards.js";
+import { GET_NOT_COVERED_GUARDS } from "../actions/get-not-covered-guards.js";
 
 export const ADMIN_GUARDS = {
   command: "admin_guards",

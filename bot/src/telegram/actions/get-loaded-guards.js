@@ -1,7 +1,7 @@
 import agenda from "../../init.js";
 import { newValueButton, newActionButton } from "../keyboard-utils.js";
-import { GET_GUARD_INFORMATION } from "./get-guard-information-act.js";
-import { DELETE_GUARD } from "./delete-guard-act.js";
+import { GET_GUARD_INFORMATION } from "./get-guard-information.js";
+import { DELETE_GUARD } from "./delete-guard.js";
 
 export const GET_LOADED_GUARDS = {
   action: "get-loaded-guards",

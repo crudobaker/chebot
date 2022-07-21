@@ -1,9 +1,9 @@
-import { GET_LOADED_GUARDS } from "./get-loaded-guards-act.js";
-import { GET_NOT_COVERED_GUARDS } from "./get-not-covered-guards-act.js";
-import { GET_GUARD_INFORMATION } from "./get-guard-information-act.js";
-import { DELETE_GUARD } from "./delete-guard-act.js";
-import { GET_AVAILABLE_USER_FOR_ASSIGN } from "./get-available-user-for-assign-act.js";
-import { ASSIGN_GUARD } from "./assign-guard-act.js";
+import { GET_LOADED_GUARDS } from "./get-loaded-guards.js";
+import { GET_NOT_COVERED_GUARDS } from "./get-not-covered-guards.js";
+import { GET_GUARD_INFORMATION } from "./get-guard-information.js";
+import { DELETE_GUARD } from "./delete-guard.js";
+import { GET_AVAILABLE_USER_FOR_ASSIGN } from "./get-available-user-for-assign.js";
+import { ASSIGN_GUARD } from "./assign-guard.js";
 
 export default function configureActions(bot) {
   bot.action(GET_LOADED_GUARDS.action, GET_LOADED_GUARDS.execute);

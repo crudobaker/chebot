@@ -4,7 +4,7 @@ import {
   newActionButton,
   readCallbackQueryParams,
 } from "../keyboard-utils.js";
-import { ASSIGN_GUARD } from "./assign-guard-act.js";
+import { ASSIGN_GUARD } from "./assign-guard.js";
 
 export const GET_AVAILABLE_USER_FOR_ASSIGN = {
   action: "get-available-user-for-assign",
