@@ -7,8 +7,8 @@ import {
 import { ASSIGN_GUARD } from "./assign-guard.js";
 
 export const GET_AVAILABLE_USER_FOR_ASSIGN = {
-  action: "get-available-user-for-assign",
-  execute: (ctx) => {
+  name: "get-available-user-for-assign",
+  apply: (ctx) => {
     const [guardId] = readCallbackQueryParams(ctx);
     ctx.reply("Usuarios disponibles para asignar:", {
       reply_markup: {
@@ -16,7 +16,7 @@ export const GET_AVAILABLE_USER_FOR_ASSIGN = {
           .getAllUsers()
           .map((user) => [
             newValueButton(user.info()),
-            newActionButton("Asignar 🧑", ASSIGN_GUARD.action, [
+            newActionButton("Asignar 🧑", ASSIGN_GUARD.name, [
               guardId,
               user.id,
             ]),

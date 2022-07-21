@@ -7,8 +7,8 @@ import {
 import { readCallbackQueryParams } from "../keyboard-utils.js";
 
 export const ASSIGN_GUARD = {
-  action: "assign-guard",
-  execute: (ctx) => {
+  name: "assign-guard",
+  apply: (ctx) => {
     try {
       const [guardId, userId] = readCallbackQueryParams(ctx);
       const { guard, user } = agenda.assignGuardToUser(guardId, userId);

@@ -9,13 +9,13 @@ export const ADMIN_GUARDS = {
     const options = {
       reply_markup: {
         inline_keyboard: [
+          [newActionButton("Guardias Cargadas 🗂️", GET_LOADED_GUARDS.name)],
           [
             newActionButton(
-              GET_LOADED_GUARDS.description,
-              GET_LOADED_GUARDS.action
+              "Guardias No Cubiertas 📝",
+              GET_NOT_COVERED_GUARDS.name
             ),
           ],
-          [newActionButton(GET_NOT_COVERED_GUARDS.description, GET_NOT_COVERED_GUARDS.action)],
         ],
       },
     };

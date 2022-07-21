@@ -2,8 +2,8 @@ import agenda from "../../init.js";
 import { readCallbackQueryParams } from "../keyboard-utils.js";
 
 export const DELETE_GUARD = {
-  action: "delete-guard",
-  execute: (ctx) => {
+  name: "delete-guard",
+  apply: (ctx) => {
     try {
       const [guardId] = readCallbackQueryParams(ctx);
       const deletedGuard = agenda.deleteGuard(guardId);

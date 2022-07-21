@@ -3,8 +3,8 @@ import { GUARD_NOT_FOUND } from "core/src/model/agenda.js";
 import { readCallbackQueryParams } from "../keyboard-utils.js";
 
 export const GET_GUARD_INFORMATION = {
-  action: "get-guard-information",
-  execute: (ctx) => {
+  name: "get-guard-information",
+  apply: (ctx) => {
     try {
       const [guardId] = readCallbackQueryParams(ctx);
       const { guard, users } = agenda.getGuardAssignations(guardId);
