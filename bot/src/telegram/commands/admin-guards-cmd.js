@@ -1,4 +1,6 @@
 import { newActionButton } from "../keyboard-utils.js";
+import { GET_LOADED_GUARDS } from "../actions/get-loaded-guards-act.js";
+import { GET_NOT_COVERED_GUARDS } from "../actions/get-not-covered-guards-act.js";
 
 export const ADMIN_GUARDS = {
   command: "admin_guards",
@@ -7,8 +9,13 @@ export const ADMIN_GUARDS = {
     const options = {
       reply_markup: {
         inline_keyboard: [
-          [newActionButton("Guardias Cargadas 🗂️", "getLoadedGuards")],
-          [newActionButton("Guardias no Cubiertas 📝", "getNotCoveredGuards")],
+          [
+            newActionButton(
+              GET_LOADED_GUARDS.description,
+              GET_LOADED_GUARDS.action
+            ),
+          ],
+          [newActionButton(GET_NOT_COVERED_GUARDS.description, GET_NOT_COVERED_GUARDS.action)],
         ],
       },
     };
