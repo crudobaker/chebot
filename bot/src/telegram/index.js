@@ -2,10 +2,13 @@ import { Telegraf } from "telegraf";
 import configureMiddlewares from "./middlewares.js";
 import configureCommands from "./commands/index.js";
 import configureActions from "./actions/index.js";
+
 const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);
 
 configureMiddlewares(bot);
+configureCommands(bot);
+configureActions(bot);
 
 bot.help((ctx) => {
   const { user } = ctx.state;
@@ -13,9 +16,6 @@ bot.help((ctx) => {
     `Hola ${user.firstName} 👋. Soy El Guardian 🤖.\n\n Presiona el botón menú para ver las opciones disponibles.`
   );
 });
-
-configureCommands(bot);
-configureActions(bot);
 
 bot.launch();
 

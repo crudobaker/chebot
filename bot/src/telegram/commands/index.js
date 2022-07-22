@@ -6,7 +6,7 @@ export const COORDINATOR_COMMANDS = [MY_GUARDS, MY_NEXT_GUARD, ADMIN_GUARDS];
 export const DEFAULT_COMMANDS = [MY_GUARDS, MY_NEXT_GUARD];
 
 export default function configureCommands(bot) {
-  bot.command(MY_GUARDS.command, MY_GUARDS.execute);
-  bot.command(MY_NEXT_GUARD.command, MY_NEXT_GUARD.execute);
-  bot.command(ADMIN_GUARDS.command, ADMIN_GUARDS.execute);
+  bot.command(MY_GUARDS.name, MY_GUARDS.apply);
+  bot.command(MY_NEXT_GUARD.name, MY_NEXT_GUARD.apply);
+  bot.command(ADMIN_GUARDS.name, ADMIN_GUARDS.apply);
 }

@@ -3,9 +3,9 @@ import { GET_LOADED_GUARDS } from "../actions/get-loaded-guards.js";
 import { GET_NOT_COVERED_GUARDS } from "../actions/get-not-covered-guards.js";
 
 export const ADMIN_GUARDS = {
-  command: "admin_guards",
+  name: "admin_guards",
   description: "📝 Administrar Guardias",
-  execute: (ctx) => {
+  apply: (ctx) => {
     const options = {
       reply_markup: {
         inline_keyboard: [

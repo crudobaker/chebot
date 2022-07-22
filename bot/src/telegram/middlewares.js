@@ -32,11 +32,18 @@ const addUser = (ctx, next) => {
 const configureCommands = (ctx, next) => {
   try {
     const { user } = ctx.state;
+    let commands = [];
     if (user.isCoordinator()) {
-      ctx.telegram.setMyCommands(COORDINATOR_COMMANDS);
+      commands = COORDINATOR_COMMANDS;
     } else {
-      ctx.telegram.setMyCommands(DEFAULT_COMMANDS);
+      commands = DEFAULT_COMMANDS;
     }
+    ctx.telegram.setMyCommands(
+      commands.map(({ name, description }) => ({
+        command: name,
+        description,
+      }))
+    );
     return next();
   } catch (error) {
     ctx.error("Error adding commands.");

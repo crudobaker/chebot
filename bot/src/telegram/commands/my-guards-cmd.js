@@ -1,9 +1,9 @@
 import agenda from "../../init.js";
 
 export const MY_GUARDS = {
-  command: "my_guards",
+  name: "my_guards",
   description: "🗓️ Mis Guardias",
-  execute: (ctx) => {
+  apply: (ctx) => {
     try {
       const { user } = ctx.state;
       const guards = agenda.getAllNextGuardsForUser(user);
