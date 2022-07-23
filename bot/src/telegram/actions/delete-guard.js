@@ -1,5 +1,5 @@
-import agenda from "../../init.js";
-import { readCallbackQueryParams } from "../keyboard-utils.js";
+import agenda from "bot/src/init.js";
+import { readCallbackQueryParams } from "bot/src/telegram/keyboard-utils.js";
 
 export const DELETE_GUARD = {
   name: "delete-guard",

@@ -1,5 +1,8 @@
-import agenda from "../init.js";
-import { DEFAULT_COMMANDS, COORDINATOR_COMMANDS } from "./commands/index.js";
+import agenda from "bot/src/init.js";
+import {
+  DEFAULT_COMMANDS,
+  COORDINATOR_COMMANDS,
+} from "bot/src/telegram/commands/index.js";
 
 const addRepliesMessages = (ctx, next) => {
   ctx.error = (message) => ctx.reply(`❗${message}`);

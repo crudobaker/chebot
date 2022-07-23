@@ -1,7 +1,10 @@
-import agenda from "../../init.js";
-import { newValueButton, newActionButton } from "../keyboard-utils.js";
-import { GET_GUARD_INFORMATION } from "./get-guard-information.js";
-import { DELETE_GUARD } from "./delete-guard.js";
+import agenda from "bot/src/init.js";
+import {
+  newValueButton,
+  newActionButton,
+} from "bot/src/telegram/keyboard-utils.js";
+import { GET_GUARD_INFORMATION } from "bot/src/telegram/actions/get-guard-information.js";
+import { DELETE_GUARD } from "bot/src/telegram/actions//delete-guard.js";
 
 export const GET_LOADED_GUARDS = {
   name: "get-loaded-guards",

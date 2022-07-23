@@ -8,6 +8,7 @@
     "bot": "nodemon src/telegram/index.js"
   },
   "dependencies": {
+    "bot": "file:.",
     "core": "*",
     "telegraf": "^4.8.5"
   },

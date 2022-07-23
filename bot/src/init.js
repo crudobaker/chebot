@@ -11,7 +11,7 @@ const leoUser = agenda.createUser(
   "Leonardo Martin",
   "Crudo",
   "leo_crudo",
-  PHYSIOTHERAPIST_ROLE
+  COORDINATOR_ROLE
 );
 const pabloUser = agenda.createUser(
   "5159780344",

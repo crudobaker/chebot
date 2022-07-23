@@ -1,7 +1,7 @@
 import { Telegraf } from "telegraf";
-import configureMiddlewares from "./middlewares.js";
-import configureCommands from "./commands/index.js";
-import configureActions from "./actions/index.js";
+import configureMiddlewares from "bot/src/telegram/middlewares.js";
+import configureCommands from "bot/src/telegram/commands/index.js";
+import configureActions from "bot/src/telegram/actions/index.js";
 
 const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);

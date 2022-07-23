@@ -1,6 +1,6 @@
-import agenda from "../../init.js";
+import agenda from "bot/src/init.js";
 import { GUARD_NOT_FOUND } from "core/src/model/agenda.js";
-import { readCallbackQueryParams } from "../keyboard-utils.js";
+import { readCallbackQueryParams } from "bot/src/telegram/keyboard-utils.js";
 
 export const GET_GUARD_INFORMATION = {
   name: "get-guard-information",

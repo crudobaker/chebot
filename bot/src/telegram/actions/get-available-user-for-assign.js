@@ -1,10 +1,10 @@
-import agenda from "../../init.js";
+import agenda from "bot/src/init.js";
 import {
   newValueButton,
   newActionButton,
   readCallbackQueryParams,
-} from "../keyboard-utils.js";
-import { ASSIGN_GUARD } from "./assign-guard.js";
+} from "bot/src/telegram/keyboard-utils.js";
+import { ASSIGN_GUARD } from "bot/src/telegram/actions/assign-guard.js";
 
 export const GET_AVAILABLE_USER_FOR_ASSIGN = {
   name: "get-available-user-for-assign",

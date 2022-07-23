@@ -1,6 +1,6 @@
-import { newActionButton } from "../keyboard-utils.js";
-import { GET_LOADED_GUARDS } from "../actions/get-loaded-guards.js";
-import { GET_NOT_COVERED_GUARDS } from "../actions/get-not-covered-guards.js";
+import { newActionButton } from "bot/src/telegram/keyboard-utils.js";
+import { GET_LOADED_GUARDS } from "bot/src/telegram/actions/get-loaded-guards.js";
+import { GET_NOT_COVERED_GUARDS } from "bot/src/telegram/actions/get-not-covered-guards.js";
 
 export const ADMIN_GUARDS = {
   name: "admin_guards",

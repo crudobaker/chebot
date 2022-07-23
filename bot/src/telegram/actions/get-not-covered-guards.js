@@ -1,6 +1,9 @@
-import agenda from "../../init.js";
-import { GET_AVAILABLE_USER_FOR_ASSIGN } from "./get-available-user-for-assign.js";
-import { newValueButton, newActionButton } from "../keyboard-utils.js";
+import agenda from "bot/src/init.js";
+import { GET_AVAILABLE_USER_FOR_ASSIGN } from "bot/src/telegram/actions/get-available-user-for-assign.js";
+import {
+  newValueButton,
+  newActionButton,
+} from "bot/src/telegram/keyboard-utils.js";
 
 export const GET_NOT_COVERED_GUARDS = {
   name: "get-not-covered-guards",

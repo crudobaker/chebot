@@ -1,10 +1,10 @@
-import agenda from "../../init.js";
+import agenda from "bot/src/init.js";
 import {
   GUARD_ALREADY_HAPPEND,
   GUARD_ALREADY_ASSIGNED_TO_USER,
   GUARD_ALREADY_COVERED,
 } from "core/src/model/guard.js";
-import { readCallbackQueryParams } from "../keyboard-utils.js";
+import { readCallbackQueryParams } from "bot/src/telegram/keyboard-utils.js";
 
 export const ASSIGN_GUARD = {
   name: "assign-guard",
