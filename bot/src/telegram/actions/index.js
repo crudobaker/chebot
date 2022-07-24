@@ -4,18 +4,16 @@ import { GET_GUARD_INFORMATION } from "bot/src/telegram/actions/get-guard-inform
 import { DELETE_GUARD } from "bot/src/telegram/actions/delete-guard.js";
 import { GET_AVAILABLE_USER_FOR_ASSIGN } from "bot/src/telegram/actions/get-available-user-for-assign.js";
 import { ASSIGN_GUARD } from "bot/src/telegram/actions/assign-guard.js";
+import { CREATE_GUARD } from "bot/src/telegram/actions/create-guard.js";
 
 export default function configureActions(bot) {
-  bot.action(GET_LOADED_GUARDS.name, GET_LOADED_GUARDS.apply);
-  bot.action(GET_NOT_COVERED_GUARDS.name, GET_NOT_COVERED_GUARDS.apply);
-  bot.action(
-    new RegExp(GET_GUARD_INFORMATION.name),
-    GET_GUARD_INFORMATION.apply
-  );
-  bot.action(new RegExp(DELETE_GUARD.name), DELETE_GUARD.apply);
-  bot.action(
-    new RegExp(GET_AVAILABLE_USER_FOR_ASSIGN.name),
-    GET_AVAILABLE_USER_FOR_ASSIGN.apply
-  );
-  bot.action(new RegExp(ASSIGN_GUARD.name), ASSIGN_GUARD.apply);
+  [
+    GET_LOADED_GUARDS,
+    GET_NOT_COVERED_GUARDS,
+    GET_GUARD_INFORMATION,
+    DELETE_GUARD,
+    GET_AVAILABLE_USER_FOR_ASSIGN,
+    ASSIGN_GUARD,
+    CREATE_GUARD,
+  ].forEach((action) => action.configure(bot));
 }
