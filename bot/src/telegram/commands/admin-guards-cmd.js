@@ -1,6 +1,7 @@
 import { newActionButton } from "bot/src/telegram/keyboard-utils.js";
 import { GET_LOADED_GUARDS } from "bot/src/telegram/actions/get-loaded-guards.js";
 import { GET_NOT_COVERED_GUARDS } from "bot/src/telegram/actions/get-not-covered-guards.js";
+import { CREATE_GUARD } from "bot/src/telegram/actions/create-guard.js";
 
 export const ADMIN_GUARDS = {
   name: "admin_guards",
@@ -9,6 +10,7 @@ export const ADMIN_GUARDS = {
     const options = {
       reply_markup: {
         inline_keyboard: [
+          [newActionButton("Nueva Guardia 🆕", CREATE_GUARD.name)],
           [newActionButton("Guardias Cargadas 🗂️", GET_LOADED_GUARDS.name)],
           [
             newActionButton(
