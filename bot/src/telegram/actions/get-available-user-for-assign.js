@@ -15,7 +15,7 @@ const getAvailableUserForAssign = (ctx) => {
         .getAllUsers()
         .map((user) => [
           newValueButton(user.info()),
-          newActionButton("Asignar 🧑", ASSIGN_GUARD.name, [guardId, user.id]),
+          newActionButton("Asignar 🧑", ASSIGN_GUARD.name, guardId, user.id),
         ]),
     },
   });

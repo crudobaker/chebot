@@ -4,10 +4,10 @@
  * @param {Array} params to be added at the end of the callback_query
  * @return {object} the structure of a Button with an action
  */
-export function newActionButton(text, action, params = []) {
+export function newActionButton(text, action, ...params) {
   return {
     text,
-    callback_data: params.length ? createCallbackQuery(action, params) : action,
+    callback_data: params && params.length ? createCallbackQuery(action, params) : action,
   };
 }
 

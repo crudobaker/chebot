@@ -14,9 +14,11 @@ const getNotCoveredGuards = (ctx) => {
       reply_markup: {
         inline_keyboard: notCoveredGuards.map((guard) => [
           newValueButton(guard.dateInfo()),
-          newActionButton("Asignar ➕", GET_AVAILABLE_USER_FOR_ASSIGN.name, [
-            guard.id,
-          ]),
+          newActionButton(
+            "Asignar ➕",
+            GET_AVAILABLE_USER_FOR_ASSIGN.name,
+            guard.id
+          ),
         ]),
       },
     });

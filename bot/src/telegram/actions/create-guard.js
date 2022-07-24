@@ -16,7 +16,7 @@ const initCreateGuardFlow = (ctx) => {
         reply_markup: {
           inline_keyboard: [
             [
-              newActionButton("Si", createGuardName, [date.getTime()]),
+              newActionButton("Si", createGuardName, date.getTime()),
               newActionButton("Cancelar", "x"),
             ],
           ],

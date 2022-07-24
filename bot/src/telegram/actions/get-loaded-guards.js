@@ -15,8 +15,8 @@ const getLoadedGuards = (ctx) => {
       reply_markup: {
         inline_keyboard: guards.map((guard) => [
           newValueButton(guard.dateInfo()),
-          newActionButton("ℹ️", GET_GUARD_INFORMATION.name, [guard.id]),
-          newActionButton("❌", DELETE_GUARD.name, [guard.id]),
+          newActionButton("ℹ️", GET_GUARD_INFORMATION.name, guard.id),
+          newActionButton("❌", DELETE_GUARD.name, guard.id),
         ]),
       },
     });
