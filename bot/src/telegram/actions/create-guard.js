@@ -1,51 +1,50 @@
 import agenda from "bot/src/init.js";
 import { formatDate } from "core/src/date-utils.js";
 import {
-  newActionButton,
+  yesCancelKeyboard,
   readCallbackQueryParams,
 } from "bot/src/telegram/keyboard-utils.js";
 
-const name = "create-guard";
-const createGuardName = "create-guard-yes";
+const askForConfirmation = (ctx, date) => {
+  const options = yesCancelKeyboard({
+    yes: { name: createGuardAction, params: date.getTime() },
+  });
+  ctx.info(
+    `Desea crear una guardia para la fecha ${formatDate(date)}?`,
+    options
+  );
+};
 
 const initCreateGuardFlow = (ctx) => {
   try {
     const { calendar } = ctx.state;
     calendar.onDateSelect((context, date) => {
-      const options = {
-        reply_markup: {
-          inline_keyboard: [
-            [
-              newActionButton("Si", createGuardName, date.getTime()),
-              newActionButton("Cancelar", "x"),
-            ],
-          ],
-        },
-      };
-      context.reply(
-        `Desea crear una guardia para la fecha ${formatDate(date)}?`,
-        options
-      );
+      askForConfirmation(context, date);
     });
     ctx.reply("Elija una fecha para la nueva guardia:", calendar.markup());
   } catch (error) {
-    console.log(error)
     ctx.error("Error al crear la guardia.");
   }
 };
 
 const createGuard = (ctx) => {
-  const [dateTimeGuard] = readCallbackQueryParams(ctx);
-  const dateGuard = new Date(Number(dateTimeGuard));
-  agenda.createGuard(dateGuard);
-  ctx.success(
-    `La guardia para la fecha ${formatDate(dateGuard)} fue creada con éxito.`
-  );
+  try {
+    const [dateTimeGuard] = readCallbackQueryParams(ctx);
+    const dateGuard = new Date(Number(dateTimeGuard));
+    agenda.createGuard(dateGuard);
+    ctx.success(
+      `La guardia para la fecha ${formatDate(dateGuard)} fue creada con éxito.`
+    );
+  } catch (error) {
+    ctx.error("Error al crear la guardia.");
+  }
 };
 
+const name = "create-guard";
+const createGuardAction = "yes-create-guard";
 const configure = (bot) => {
   bot.action(name, initCreateGuardFlow);
-  bot.action(new RegExp(createGuardName), createGuard);
+  bot.action(createGuardAction, createGuard);
 };
 
 export const CREATE_GUARD = { name, configure };

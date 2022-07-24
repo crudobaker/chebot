@@ -5,8 +5,6 @@ import {
   newActionButton,
 } from "bot/src/telegram/keyboard-utils.js";
 
-const name = "get-not-covered-guards";
-
 const getNotCoveredGuards = (ctx) => {
   const notCoveredGuards = agenda.getNotCoveredGuards();
   if (notCoveredGuards.length > 0) {
@@ -27,6 +25,7 @@ const getNotCoveredGuards = (ctx) => {
   }
 };
 
+const name = "get-not-covered-guards";
 const configure = (bot) => {
   bot.action(name, getNotCoveredGuards);
 };

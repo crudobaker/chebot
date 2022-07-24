@@ -6,7 +6,6 @@ import {
 } from "bot/src/telegram/keyboard-utils.js";
 import { ASSIGN_GUARD } from "bot/src/telegram/actions/assign-guard.js";
 
-const name = "get-available-user-for-assign";
 const getAvailableUserForAssign = (ctx) => {
   const [guardId] = readCallbackQueryParams(ctx);
   ctx.reply("Usuarios disponibles para asignar:", {
@@ -21,8 +20,9 @@ const getAvailableUserForAssign = (ctx) => {
   });
 };
 
+const name = "get-available-user-for-assign";
 const configure = (bot) => {
-  bot.action(new RegExp(name), getAvailableUserForAssign);
+  bot.action(name, getAvailableUserForAssign);
 };
 
 export const GET_AVAILABLE_USER_FOR_ASSIGN = { name, configure };

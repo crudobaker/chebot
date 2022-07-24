@@ -6,8 +6,6 @@ import {
 import { GET_GUARD_INFORMATION } from "bot/src/telegram/actions/get-guard-information.js";
 import { DELETE_GUARD } from "bot/src/telegram/actions//delete-guard.js";
 
-const name = "get-loaded-guards";
-
 const getLoadedGuards = (ctx) => {
   const guards = agenda.getAllGuards();
   if (guards.length > 0) {
@@ -25,6 +23,7 @@ const getLoadedGuards = (ctx) => {
   }
 };
 
+const name = "get-loaded-guards";
 const configure = (bot) => {
   bot.action(name, getLoadedGuards);
 };

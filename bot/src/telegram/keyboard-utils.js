@@ -7,7 +7,8 @@
 export function newActionButton(text, action, ...params) {
   return {
     text,
-    callback_data: params && params.length ? createCallbackQuery(action, params) : action,
+    callback_data:
+      params && params.length ? createCallbackQuery(action, params) : action,
   };
 }
 
@@ -19,6 +20,19 @@ export function newValueButton(text) {
   return {
     text,
     callback_data: "x", //we need to pass something here
+  };
+}
+
+export function yesCancelKeyboard({ yes, cancel = {} }) {
+  return {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          newActionButton("Si", yes.name, yes.params),
+          newValueButton("Cancelar", cancel.name, cancel.params),
+        ],
+      ],
+    },
   };
 }
 

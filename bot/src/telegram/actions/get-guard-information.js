@@ -28,7 +28,7 @@ const getGuardInformation = (ctx) => {
 };
 
 const configure = (bot) => {
-  bot.action(new RegExp(name), getGuardInformation);
+  bot.action(name, getGuardInformation);
 };
 
 export const GET_GUARD_INFORMATION = { name, configure };

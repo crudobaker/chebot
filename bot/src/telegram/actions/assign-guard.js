@@ -6,8 +6,6 @@ import {
 } from "core/src/model/guard.js";
 import { readCallbackQueryParams } from "bot/src/telegram/keyboard-utils.js";
 
-const name = "assign-guard";
-
 const assignGuard = (ctx) => {
   try {
     const [guardId, userId] = readCallbackQueryParams(ctx);
@@ -32,8 +30,9 @@ const assignGuard = (ctx) => {
   }
 };
 
+const name = "assign-guard";
 const configure = (bot) => {
-  bot.action(new RegExp(name), assignGuard);
+  bot.action(name, assignGuard);
 };
 
 export const ASSIGN_GUARD = { name, configure };
