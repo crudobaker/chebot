@@ -1,9 +1,3 @@
-import agenda from "bot/src/init.js";
-import {
-  DEFAULT_COMMANDS,
-  COORDINATOR_COMMANDS,
-} from "bot/src/telegram/commands/index.js";
-
 const addRepliesMessages = (ctx, next) => {
   ctx.error = (message) => ctx.reply(`❗${message}`);
   ctx.warning = (message) => ctx.reply(`⚠️ ${message}`);
@@ -21,6 +15,7 @@ const errorHandling = (ctx, next) => {
   }
 };
 
+import agenda from "bot/src/init.js";
 const addUser = (ctx, next) => {
   try {
     const userId = (ctx.update.message || ctx.update.callback_query).from.id;
@@ -32,6 +27,10 @@ const addUser = (ctx, next) => {
   }
 };
 
+import {
+  DEFAULT_COMMANDS,
+  COORDINATOR_COMMANDS,
+} from "bot/src/telegram/commands/index.js";
 const configureCommands = (ctx, next) => {
   try {
     const { user } = ctx.state;
@@ -53,6 +52,29 @@ const configureCommands = (ctx, next) => {
   }
 };
 
+import Calendar from "telegraf-calendar-telegram";
+import { toDate } from "core/src/date-utils.js";
+const addCalendarPicker = (bot) => (ctx, next) => {
+  const calendar = new Calendar(bot);
+  const calendarWrapper = {
+    markup: () => calendar.getCalendar(),
+    onDateSelect: (callback) => {
+      calendar.setDateListener((context, date) => {
+        const dateObj = toDate(date);
+        callback(context, dateObj);
+      });
+    },
+  };
+  ctx.state.calendar = calendarWrapper;
+  next();
+};
+
 export default function configureMiddlewares(bot) {
-  bot.use(addRepliesMessages, errorHandling, addUser, configureCommands);
+  bot.use(
+    addRepliesMessages,
+    errorHandling,
+    addUser,
+    configureCommands,
+    addCalendarPicker(bot)
+  );
 }
