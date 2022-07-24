@@ -1,9 +1,15 @@
+import agenda from "bot/src/init.js";
 import Calendar from "telegraf-calendar-telegram";
 import { toDate, formatDate } from "core/src/date-utils.js";
-import { newActionButton } from "bot/src/telegram/keyboard-utils.js";
+import {
+  newActionButton,
+  readCallbackQueryParams,
+} from "bot/src/telegram/keyboard-utils.js";
 
 const name = "create-guard";
-const createGuard = (bot) => (ctx) => {
+const createGuardName = "create-guard-yes";
+
+const initCreateGuardFlow = (bot) => (ctx) => {
   try {
     const calendar = new Calendar(bot);
     calendar.setDateListener((context, date) => {
@@ -11,7 +17,10 @@ const createGuard = (bot) => (ctx) => {
       const options = {
         reply_markup: {
           inline_keyboard: [
-            [newActionButton("Si", "x"), newActionButton("No", "x")],
+            [
+              newActionButton("Si", createGuardName, [dateObj.getTime()]),
+              newActionButton("Cancelar", "x"),
+            ],
           ],
         },
       };
@@ -26,8 +35,18 @@ const createGuard = (bot) => (ctx) => {
   }
 };
 
+const createGuard = (ctx) => {
+  const [dateTimeGuard] = readCallbackQueryParams(ctx);
+  const dateGuard = new Date(Number(dateTimeGuard));
+  agenda.createGuard(dateGuard);
+  ctx.success(
+    `La guardia para la fecha ${formatDate(dateGuard)} fue creada con éxito.`
+  );
+};
+
 const configure = (bot) => {
-  bot.action(name, createGuard(bot));
+  bot.action(name, initCreateGuardFlow(bot));
+  bot.action(new RegExp(createGuardName), createGuard);
 };
 
 export const CREATE_GUARD = { name, configure };
